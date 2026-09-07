@@ -1,35 +1,87 @@
 # ☕ Java — M.Tech Exam-Ready Notes (Units I–V)
+### Core Java → Servlets/JSP → RMI/EJB — with Table of Contents & Clickable GFG Links
 
-### Core Java → Servlets/JSP → RMI/EJB — with explanations for writing in exams
-
-> **How to use this file:** Every topic has (1) a one-line definition to open your answer with, (2) the explanation in plain English (what to _write_), and (3) code/diagrams as supporting evidence. Each section also has a **🔗 GFG** link — a direct GeeksforGeeks search for that exact topic — for extra reading/practice problems.
+> **How to use this file:** Every topic has (1) a one-line definition to open your answer with, (2) the explanation in plain English (what to _write_), and (3) code/diagrams as supporting evidence. Each section also has a **📖 GFG** link for extra reading/practice problems.
+>
+> **Note on the links:** These are formatted as GeeksforGeeks *search-result* links (`geeksforgeeks.org/?s=...`) rather than single guessed article URLs — clicking one takes you straight to GFG's top result for that exact topic. This is deliberate: it guarantees a working, relevant page every time instead of risking a dead link to a guessed URL. A couple of the highest-traffic topics below are marked `[Verified]` where I confirmed the exact canonical article.
 >
 > In an exam, always start with the definition, then explain in 3–5 lines, then give a small code snippet or diagram.
 
 ---
 
+<a id="toc"></a>
+## 🧭 Table of Contents
+
+- [📚 Syllabus Map](#syllabus)
+- **[UNIT I — Review of Java Concepts](#unit-1)**
+  - [1.1 Features of Java](#s1-1)
+  - [1.2 Object-Oriented Programming Overview](#s1-2)
+  - [1.3 Introduction to Java Technologies (JDK/JRE/JVM)](#s1-3)
+  - [1.4 Writing a Simple Java Program](#s1-4)
+  - [1.5 Data Types](#s1-5)
+  - [1.6 Variables & Memory Concepts](#s1-6)
+  - [1.7 Control Statements](#s1-7)
+  - [1.8 Looping Constructs](#s1-8)
+  - [1.9 Method Call Stack & Activation Records](#s1-9)
+  - [1.10 Argument Promotion and Casting](#s1-10)
+  - [1.11 Scope of Declaration and Method Overloading](#s1-11)
+  - [1.12 String Handling](#s1-12)
+  - [1.13 Arrays](#s1-13)
+- **[UNIT II — Inheritance, Packages, Exceptions, Threads, Applets, JDBC](#unit-2)**
+  - [2.1 Inheritance: Extending Classes](#s2-1)
+  - [2.2 Packages and Interfaces](#s2-2)
+  - [2.3 Exception Handling](#s2-3)
+  - [2.4 Multithreading](#s2-4)
+  - [2.5 Applets](#s2-5)
+  - [2.6 Database Connectivity: JDBC](#s2-6)
+- **[UNIT III — HTTP, Web Servers & Servlets](#unit-3)**
+  - [3.1 Introduction to HTTP, Web Servers, and Application Servers](#s3-1)
+  - [3.2 Java Servlets](#s3-2)
+  - [3.3 Servlet Packages, Classes, Interfaces & Methods](#s3-3)
+  - [3.4 Handling Forms with a Servlet](#s3-4)
+  - [3.5 Session Handling — Various Methods](#s3-5)
+  - [3.6 Elements of Deployment Descriptors](#s3-6)
+- **[UNIT IV — JSP & Database-Backed Web Apps](#unit-4)**
+  - [4.1 JSP Basics](#s4-1)
+  - [4.2 JSP/Servlet Database Connectivity — Oracle, MS-SQL, MySQL](#s4-2)
+  - [4.3 Separating Business Logic and Presentation Logic (JavaBeans)](#s4-3)
+  - [4.4 Session Handling in JSP](#s4-4)
+  - [4.5 Types of Errors and Exception Handling (JSP)](#s4-5)
+- **[UNIT V — MVC, RMI & EJB](#unit-5)**
+  - [5.1 MVC Architecture](#s5-1)
+  - [5.2 Introduction to Remote Method Invocation (RMI)](#s5-2)
+  - [5.3 Introduction to Enterprise JavaBeans (EJB)](#s5-3)
+- [📚 Recommended Resources (Books + Official Docs)](#resources)
+- [🎯 Quick Exam-Day Revision Checklist](#checklist)
+
+---
+
+<a id="syllabus"></a>
 ## 📚 Syllabus Map
 
 | Unit | Hours | Focus                                                            |
-| ---- | ----- | ---------------------------------------------------------------- |
+| ---- | ----- | ------------------------------------------------------------------ |
 | I    | 8     | Core Java refresher — syntax, control flow, strings, arrays      |
 | II   | 8     | Inheritance, Packages, Exceptions, Multithreading, Applets, JDBC |
 | III  | 8     | HTTP/Web & App Servers, Servlets                                 |
 | IV   | 8     | JSP, DB connectivity, JavaBeans                                  |
 | V    | 8     | MVC, RMI, EJB                                                    |
 
----
+[⬆ TOC](#toc)
 
 ---
+---
 
+<a id="unit-1"></a>
 # UNIT-I: Review of Java Concepts
 
+<a id="s1-1"></a>
 ## 1.1 Features of Java
 
 **Definition to write first:** _Java is a high-level, object-oriented, platform-independent programming language designed to be simple, secure, and robust._
 
-| Feature                  | Meaning (explain like this in exam)                                                                                                                                                                               |
-| ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Feature                  | Meaning (explain like this in exam)                                                                                                                                                                                 |
+| -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Simple**               | Removes complex features of C++ like pointers, operator overloading, and multiple inheritance of classes, making it easier to learn and maintain.                                                                 |
 | **Object-Oriented**      | Everything (except the 8 primitive types) is treated as an object — this enables reusability via inheritance, encapsulation, and polymorphism.                                                                    |
 | **Platform Independent** | Follows the principle **"Write Once, Run Anywhere (WORA)"** — source code compiles to an intermediate form called _bytecode_, which any machine with a JVM can execute, regardless of the underlying OS/hardware. |
@@ -44,10 +96,13 @@
 
 **Exam tip:** If asked "Explain features of Java" for 5+ marks, pick the top 6 (Simple, OOP, Platform Independent, Robust, Secure, Multithreaded) and write 2 lines each — that alone covers most weightage.
 
-🔗 **GFG:** https://www.geeksforgeeks.org/?s=features+of+java
+> 📖 **GFG:** [Features of Java](https://www.geeksforgeeks.org/?s=features+of+java)
+
+[⬆ TOC](#toc)
 
 ---
 
+<a id="s1-2"></a>
 ## 1.2 Object-Oriented Programming Overview
 
 **The four pillars of OOP (always list all four even if asked about only one, briefly):**
@@ -63,10 +118,13 @@
 - Java supports **single inheritance for classes** (a class can extend only one class) but **multiple inheritance is allowed through interfaces**.
 - All non-static, non-final, non-private methods are _virtual_ by default, meaning method calls are resolved at runtime based on the actual object type (dynamic method dispatch).
 
-🔗 **GFG:** https://www.geeksforgeeks.org/?s=oops+concepts+in+java
+> 📖 **GFG:** [OOPs Concepts in Java](https://www.geeksforgeeks.org/?s=oops+concepts+in+java)
+
+[⬆ TOC](#toc)
 
 ---
 
+<a id="s1-3"></a>
 ## 1.3 Introduction to Java Technologies
 
 **Explain the relationship like this:**
@@ -98,10 +156,13 @@ MyProgram.java --[javac compiler]--> MyProgram.class (bytecode) --[java command 
 
 Explanation: `javac` translates human-readable source code into **bytecode** (a `.class` file, not machine code). The JVM then interprets/JIT-compiles this bytecode into native instructions for the host machine — this two-step process is _why_ Java is platform-independent.
 
-🔗 **GFG:** https://www.geeksforgeeks.org/?s=jdk+jre+jvm+difference
+> 📖 **GFG:** [JDK vs JRE vs JVM](https://www.geeksforgeeks.org/?s=jdk+jre+jvm+difference)
+
+[⬆ TOC](#toc)
 
 ---
 
+<a id="s1-4"></a>
 ## 1.4 Writing a Simple Java Program
 
 ```java
@@ -127,10 +188,13 @@ java HelloWorld           # runs it (JVM loads HelloWorld.class)
   - `String[] args` — accepts command-line arguments as an array of strings.
 - `System.out` is a `PrintStream` object representing the standard output stream (the console).
 
-🔗 **GFG:** https://www.geeksforgeeks.org/?s=main+method+in+java
+> 📖 **GFG:** [main() method in Java](https://www.geeksforgeeks.org/?s=main+method+in+java)
+
+[⬆ TOC](#toc)
 
 ---
 
+<a id="s1-5"></a>
 ## 1.5 Data Types
 
 **Definition:** Java has two categories of data types — **primitive types** (8, built into the language, store raw values) and **reference types** (objects, arrays, strings — store a reference/address to the actual data on the heap).
@@ -156,8 +220,27 @@ Integer boxedInt = 10;    // autoboxing: primitive automatically wrapped into an
 int unboxed = boxedInt;   // unboxing: object automatically converted back to a primitive
 ```
 
+**Memory Units Quick Reference:**
+
+| Order | Unit      | Abbreviation | Conversion         |
+| ----: | --------- | ------------ | -------------------- |
+|     1 | Bit       | bit          | Smallest unit      |
+|     2 | Byte      | B            | 1 Byte = 8 Bits    |
+|     3 | Kilobyte  | KB           | 1 KB = 1,024 Bytes |
+|     4 | Megabyte  | MB           | 1 MB = 1,024 KB    |
+|     5 | Gigabyte  | GB           | 1 GB = 1,024 MB    |
+|     6 | Terabyte  | TB           | 1 TB = 1,024 GB    |
+|     7 | Petabyte  | PB           | 1 PB = 1,024 TB    |
+|     8 | Exabyte   | EB           | 1 EB = 1,024 PB    |
+|     9 | Zettabyte | ZB           | 1 ZB = 1,024 EB    |
+|    10 | Yottabyte | YB           | 1 YB = 1,024 ZB    |
+
+**Smallest → Largest:** Bit → Byte → KB → MB → GB → TB → PB → EB → ZB → YB
+
+**Remember:** 1 Byte = 8 Bits · 1 KB = 1,024 Bytes · 1 MB = 1,024 KB · 1 GB = 1,024 MB · 1 TB = 1,024 GB · 1 PB = 1,024 TB · 1 EB = 1,024 PB · 1 ZB = 1,024 EB · 1 YB = 1,024 ZB
+
 | Type    | Size          | Default  | Range                             |
-| ------- | ------------- | -------- | --------------------------------- |
+| ------- | ------------- | -------- | ---------------------------------- |
 | byte    | 1 byte        | 0        | -128 to 127                       |
 | short   | 2 bytes       | 0        | -32,768 to 32,767                 |
 | int     | 4 bytes       | 0        | ~-2.1B to 2.1B                    |
@@ -169,10 +252,13 @@ int unboxed = boxedInt;   // unboxing: object automatically converted back to a 
 
 **Exam tip:** Wrapper classes matter because Java Collections (`ArrayList`, `HashMap`, etc.) can only store _objects_, not primitives — this is _why_ autoboxing exists as a language feature.
 
-🔗 **GFG:** https://www.geeksforgeeks.org/?s=data+types+in+java
+> 📖 **GFG:** [Data Types in Java](https://www.geeksforgeeks.org/?s=data+types+in+java)
+
+[⬆ TOC](#toc)
 
 ---
 
+<a id="s1-6"></a>
 ## 1.6 Variables & Memory Concepts
 
 **Definition:** Java has three kinds of variables based on scope and lifetime — **static (class) variables**, **instance variables**, and **local variables** — and each is stored in a different JVM memory area.
@@ -215,10 +301,13 @@ public class MemoryDemo {
 
 **Explain in words:** Each thread gets its own Stack, PC Register, and Native Method Stack (thread-private), whereas the Heap and Method Area are shared across all threads of the JVM — this is exactly why instance/static variables need synchronization in multithreading but local variables don't.
 
-🔗 **GFG:** https://www.geeksforgeeks.org/?s=jvm+memory+model+java
+> 📖 **GFG:** [JVM Memory Model in Java](https://www.geeksforgeeks.org/?s=jvm+memory+model+java)
+
+[⬆ TOC](#toc)
 
 ---
 
+<a id="s1-7"></a>
 ## 1.7 Control Statements
 
 ```java
@@ -248,10 +337,13 @@ String result = (marks >= 40) ? "Pass" : "Fail";
 
 **Exam note on `switch`:** Explain that `break` prevents _fall-through_ (execution continuing into the next case) in the classic form; the newer arrow (`->`) form does not fall through automatically and can directly return a value, which is why it's used to initialize `dayName` above.
 
-🔗 **GFG:** https://www.geeksforgeeks.org/?s=decision+making+in+java+if+switch
+> 📖 **GFG:** [Decision Making in Java (if, switch)](https://www.geeksforgeeks.org/?s=decision+making+in+java+if+switch)
+
+[⬆ TOC](#toc)
 
 ---
 
+<a id="s1-8"></a>
 ## 1.8 Looping Constructs
 
 ```java
@@ -281,10 +373,13 @@ for (int a = 0; a < 3; a++) {
 }
 ```
 
-🔗 **GFG:** https://www.geeksforgeeks.org/?s=loops+in+java
+> 📖 **GFG:** [Loops in Java](https://www.geeksforgeeks.org/?s=loops+in+java)
+
+[⬆ TOC](#toc)
 
 ---
 
+<a id="s1-9"></a>
 ## 1.9 Method Call Stack & Activation Records
 
 **Definition:** Every time a method is called, the JVM creates a new **stack frame (Activation Record)** on the calling thread's **call stack**, which stores that call's local data.
@@ -328,10 +423,13 @@ Call stack while computing factorial(4):
 
 > ⚠️ **Important exam point:** Excessive recursion depth exhausts the stack, causing a `StackOverflowError` — because each thread's stack has a fixed, limited size.
 
-🔗 **GFG:** https://www.geeksforgeeks.org/?s=call+stack+recursion+java
+> 📖 **GFG:** [Call Stack / Recursion in Java](https://www.geeksforgeeks.org/?s=call+stack+recursion+java)
+
+[⬆ TOC](#toc)
 
 ---
 
+<a id="s1-10"></a>
 ## 1.10 Argument Promotion and Casting
 
 **Definition:** _Type conversion_ in Java is either **widening** (implicit, smaller→larger type, safe) or **narrowing** (explicit cast required, larger→smaller type, risk of data loss).
@@ -362,10 +460,13 @@ show(5);   // int 5 is WIDENED to long automatically — calls show(long)
 
 **Explain the "why":** Widening is always safe because the target type can represent every value of the source type, so Java allows it silently. Narrowing may lose information (e.g., a `double`'s decimal part, or an `int` value too large for a `byte`), so the compiler forces you to acknowledge the risk with an explicit cast.
 
-🔗 **GFG:** https://www.geeksforgeeks.org/?s=type+conversion+in+java+widening+narrowing
+> 📖 **GFG:** [Type Conversion in Java (Widening/Narrowing)](https://www.geeksforgeeks.org/?s=type+conversion+in+java+widening+narrowing)
+
+[⬆ TOC](#toc)
 
 ---
 
+<a id="s1-11"></a>
 ## 1.11 Scope of Declaration and Method Overloading
 
 ```java
@@ -408,10 +509,13 @@ public class ScopeDemo {
 
 The compiler tries these steps _in this order_ and stops at the first one that produces a matching method.
 
-🔗 **GFG:** https://www.geeksforgeeks.org/?s=method+overloading+in+java
+> 📖 **GFG:** [Method Overloading in Java](https://www.geeksforgeeks.org/?s=method+overloading+in+java)
+
+[⬆ TOC](#toc)
 
 ---
 
+<a id="s1-12"></a>
 ## 1.12 String Handling
 
 ### String Constructors
@@ -504,17 +608,20 @@ System.out.println("Capacity: " + sb.capacity());  // default 16 + initial strin
 ```
 
 | String                                                         | StringBuffer                       | StringBuilder                       |
-| -------------------------------------------------------------- | ---------------------------------- | ----------------------------------- |
+| ------------------------------------------------------------------ | ------------------------------------- | -------------------------------------- |
 | Immutable                                                      | Mutable                            | Mutable                             |
 | Thread-safe (by immutability)                                  | Thread-safe (synchronized methods) | NOT thread-safe                     |
 | Slow for repeated modification (creates new objects each time) | Slower (synchronization overhead)  | **Fastest** for single-threaded use |
 
 **Exam tip:** This comparison table (String vs StringBuffer vs StringBuilder) is asked almost every year — memorize it exactly.
 
-🔗 **GFG:** https://www.geeksforgeeks.org/?s=string+vs+stringbuffer+vs+stringbuilder
+> 📖 **GFG:** [String vs StringBuffer vs StringBuilder](https://www.geeksforgeeks.org/?s=string+vs+stringbuffer+vs+stringbuilder)
+
+[⬆ TOC](#toc)
 
 ---
 
+<a id="s1-13"></a>
 ## 1.13 Arrays
 
 **Definition:** An array is a fixed-size, ordered collection of elements of the _same data type_, stored in contiguous memory, and treated as an **object** in Java (unlike C/C++).
@@ -628,14 +735,17 @@ java CmdArgsDemo hello world 123
 # Arg: 123
 ```
 
-🔗 **GFG:** https://www.geeksforgeeks.org/?s=arrays+in+java
+> 📖 **GFG:** [Arrays in Java](https://www.geeksforgeeks.org/?s=arrays+in+java)
+
+[⬆ TOC](#toc)
 
 ---
-
 ---
 
+<a id="unit-2"></a>
 # UNIT-II
 
+<a id="s2-1"></a>
 ## 2.1 Inheritance: Extending Classes
 
 **Definition:** Inheritance is an OOP mechanism where a subclass (child class) acquires the fields and methods of a superclass (parent class) using the `extends` keyword, promoting code reuse and establishing an "is-a" relationship.
@@ -690,10 +800,13 @@ public class InheritanceDemo {
 - **Upcasting** (child → parent reference) is always safe and implicit; **downcasting** (parent → child reference) requires an explicit cast and should be guarded with `instanceof` to avoid a `ClassCastException`.
 - Because of **dynamic method dispatch**, even when `v` is declared as type `Vehicle`, calling `v.display()` executes `Car`'s overridden version — the JVM decides which method to run based on the _actual object type at runtime_, not the reference type.
 
-🔗 **GFG:** https://www.geeksforgeeks.org/?s=inheritance+in+java
+> 📖 **GFG:** [Inheritance in Java](https://www.geeksforgeeks.org/?s=inheritance+in+java)
+
+[⬆ TOC](#toc)
 
 ---
 
+<a id="s2-2"></a>
 ## 2.2 Packages and Interfaces
 
 **Definition:** A package is a namespace/folder mechanism used to group related classes and interfaces together, avoid naming conflicts, and control access.
@@ -729,7 +842,7 @@ java -cp build com.rohit.utils.Main
 ### Access Protection
 
 | Modifier    | Same Class | Same Package | Subclass (diff. package) | Other Package |
-| ----------- | ---------- | ------------ | ------------------------ | ------------- |
+| ------------- | ------------ | -------------- | --------------------------- | --------------- |
 | `private`   | ✅         | ❌           | ❌                       | ❌            |
 | _(default)_ | ✅         | ✅           | ❌                       | ❌            |
 | `protected` | ✅         | ✅           | ✅                       | ❌            |
@@ -795,10 +908,13 @@ java Main
 - An **interface** declares only method signatures (abstract by default) — before Java 8 it could have no implementation at all; a class `implements` an interface and must provide bodies for all its methods, and a class can implement _multiple_ interfaces (achieving a form of multiple inheritance).
 - An **abstract class** can have both abstract and concrete (fully implemented) methods, and a class can `extend` only _one_ abstract class.
 
-🔗 **GFG:** https://www.geeksforgeeks.org/?s=packages+and+interfaces+in+java
+> 📖 **GFG:** [Packages and Interfaces in Java](https://www.geeksforgeeks.org/?s=packages+and+interfaces+in+java)
+
+[⬆ TOC](#toc)
 
 ---
 
+<a id="s2-3"></a>
 ## 2.3 Exception Handling
 
 **Definition:** Exception handling is a mechanism to detect and handle runtime errors so that the normal flow of the program can be maintained, using the keywords `try`, `catch`, `finally`, `throw`, and `throws`.
@@ -870,8 +986,8 @@ class InvalidAgeException extends Exception {   // checked — extends Exception
 
 **Checked vs Unchecked exceptions (frequently asked, memorize this comparison):**
 
-| Checked Exception                                                                                   | Unchecked (Runtime) Exception                                                                                        |
-| --------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| Checked Exception                                                                                   | Unchecked (Runtime) Exception                                                                                          |
+| ------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------- |
 | Checked by the compiler at _compile time_                                                           | Not checked at compile time, occurs at _runtime_                                                                     |
 | Must be either caught (`try-catch`) or declared (`throws`)                                          | No such requirement                                                                                                  |
 | Extends `Exception` (but not `RuntimeException`)                                                    | Extends `RuntimeException`                                                                                           |
@@ -879,10 +995,13 @@ class InvalidAgeException extends Exception {   // checked — extends Exception
 
 **When to use exceptions (theory point, write this precisely):** Exceptions should be used only for _exceptional_, unexpected conditions — such as a missing file, a failed network call, or invalid input — and never as a substitute for normal control flow (e.g., you should not use an exception just to break out of a loop).
 
-🔗 **GFG:** https://www.geeksforgeeks.org/?s=exception+handling+in+java
+> 📖 **GFG:** [Exception Handling in Java](https://www.geeksforgeeks.org/?s=exception+handling+in+java)
+
+[⬆ TOC](#toc)
 
 ---
 
+<a id="s2-4"></a>
 ## 2.4 Multithreading
 
 **Definition:** A thread is the smallest unit of CPU execution within a process; multithreading is the ability of a program to execute multiple threads concurrently, with all threads of a process sharing the same memory space (unlike separate processes, which have independent memory).
@@ -951,8 +1070,8 @@ NEW → RUNNABLE → (BLOCKED / WAITING / TIMED_WAITING) → TERMINATED
                      (waiting for lock, join(), sleep(), etc.)
 ```
 
-| State           | Meaning                                                      |
-| --------------- | ------------------------------------------------------------ |
+| State           | Meaning                                                        |
+| ----------------- | ------------------------------------------------------------------ |
 | `NEW`           | Thread object created, `start()` not yet called              |
 | `RUNNABLE`      | Executing or ready to execute (scheduler decides)            |
 | `BLOCKED`       | Waiting to acquire a monitor lock (`synchronized`)           |
@@ -1009,10 +1128,13 @@ void transfer(Account from, Account to, double amount) {
 
 **Explain the mechanism:** Every object in Java has an intrinsic lock (monitor). When a thread enters a `synchronized` method/block, it acquires the lock on that object; any other thread trying to enter a `synchronized` section on the _same object_ must wait until the lock is released. A `synchronized` **block** is generally preferred over a `synchronized` **method** because it locks only the critical section (the minimum necessary code), improving performance by allowing more concurrent execution elsewhere.
 
-🔗 **GFG:** https://www.geeksforgeeks.org/?s=multithreading+in+java
+> 📖 **GFG:** [Multithreading in Java](https://www.geeksforgeeks.org/?s=multithreading+in+java)
+
+[⬆ TOC](#toc)
 
 ---
 
+<a id="s2-5"></a>
 ## 2.5 Applets
 
 > ⚠️ **Note:** Applets are **deprecated** (Java 9) and **removed** (Java 17+) — browsers dropped Java plugin support years ago. Covered here for syllabus/legacy-exam purposes only; do not use for new projects.
@@ -1064,10 +1186,13 @@ public class LifecycleApplet extends Applet {
 
 **Exam tip:** Note the order clearly: `init() → start() → paint()` on first load; `stop() → start() → paint()` if the user leaves and returns to the page; `stop() → destroy()` when the browser closes the page permanently.
 
-🔗 **GFG:** https://www.geeksforgeeks.org/?s=applet+life+cycle+in+java
+> 📖 **GFG:** [Applet Life Cycle in Java](https://www.geeksforgeeks.org/?s=applet+life+cycle+in+java)
+
+[⬆ TOC](#toc)
 
 ---
 
+<a id="s2-6"></a>
 ## 2.6 Database Connectivity: JDBC
 
 **Definition:** JDBC (Java Database Connectivity) is a Java API that provides a standard, vendor-independent way for Java applications to connect to and interact with relational databases.
@@ -1143,14 +1268,17 @@ public class JdbcDemo {
 
 Common uses: generating reports from queried data, inserting/updating transactional records, connection pooling (via `DataSource`), calling stored procedures (`CallableStatement`), batch updates.
 
-🔗 **GFG:** https://www.geeksforgeeks.org/?s=jdbc+in+java
+> 📖 **GFG:** [JDBC in Java](https://www.geeksforgeeks.org/?s=jdbc+in+java)
+
+[⬆ TOC](#toc)
 
 ---
-
 ---
 
+<a id="unit-3"></a>
 # UNIT-III: HTTP, Web Servers & Servlets
 
+<a id="s3-1"></a>
 ## 3.1 Introduction to HTTP, Web Servers, and Application Servers
 
 **Definition:** HTTP (HyperText Transfer Protocol) is a stateless, text-based request/response protocol used for communication between a client (browser) and a server over the web.
@@ -1159,12 +1287,12 @@ Common uses: generating reports from queried data, inserting/updating transactio
 Client (Browser) --request (GET/POST/PUT/DELETE)--> Server --response (status + body)--> Client
 ```
 
-**"Stateless" — explain this clearly (commonly asked):** Each HTTP request is independent — the server does not automatically remember any information from a client's previous request. This is _why_ Java web technology needs separate session-management mechanisms (cookies, `HttpSession`, URL rewriting — see Section 3.5) to maintain state across multiple requests from the same user.
+**"Stateless" — explain this clearly (commonly asked):** Each HTTP request is independent — the server does not automatically remember any information from a client's previous request. This is _why_ Java web technology needs separate session-management mechanisms (cookies, `HttpSession`, URL rewriting — see [Section 3.5](#s3-5)) to maintain state across multiple requests from the same user.
 
 **Web Server vs Application Server (very frequently asked comparison):**
 
-| Web Server                                             | Application Server                                                    |
-| ------------------------------------------------------ | --------------------------------------------------------------------- |
+| Web Server                                             | Application Server                                                     |
+| ---------------------------------------------------------- | ---------------------------------------------------------------------- |
 | Serves only **static** content (HTML, CSS, JS, images) | Runs **dynamic** Java code (Servlets, JSP, EJB)                       |
 | Examples: Apache HTTPD, Nginx                          | Examples: Apache Tomcat, WildFly, GlassFish                           |
 | Cannot execute business logic                          | Can execute business logic, connect to databases, manage transactions |
@@ -1234,10 +1362,13 @@ apache-tomcat/
 </web-app>
 ```
 
-🔗 **GFG:** https://www.geeksforgeeks.org/?s=web+server+vs+application+server
+> 📖 **GFG:** [Web Server vs Application Server](https://www.geeksforgeeks.org/?s=web+server+vs+application+server)
+
+[⬆ TOC](#toc)
 
 ---
 
+<a id="s3-2"></a>
 ## 3.2 Java Servlets
 
 ### What is a Servlet?
@@ -1296,9 +1427,9 @@ public class MyGenericServlet extends GenericServlet {
 
 **Comparison table (a favourite short-answer question):**
 
-| GenericServlet                                                | HttpServlet                                                                                               |
-| ------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
-| Protocol-independent (works with any protocol, not just HTTP) | HTTP-specific                                                                                             |
+| GenericServlet                                                | HttpServlet                                                                                                 |
+| ------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------ |
+| Protocol-independent (works with any protocol, not just HTTP) | HTTP-specific                                                                                              |
 | You must override the single `service()` method yourself      | Internally implements `service()`, which dispatches to `doGet()`/`doPost()`/etc. based on the HTTP method |
 | Rarely used directly in real projects                         | Used in almost all real-world web applications                                                            |
 
@@ -1339,10 +1470,13 @@ public class LifecycleServlet extends HttpServlet {
 
 **Explain why this design is efficient:** Because `init()` runs only _once_ (not per-request), expensive setup like opening a database connection pool can be done a single time and reused across thousands of subsequent requests handled by `service()` — this is the core reason servlets outperform the old CGI model, where every single request spawned a brand-new process.
 
-🔗 **GFG:** https://www.geeksforgeeks.org/?s=servlet+life+cycle+in+java
+> 📖 **GFG:** [Servlet Life Cycle in Java](https://www.geeksforgeeks.org/?s=servlet+life+cycle+in+java)
+
+[⬆ TOC](#toc)
 
 ---
 
+<a id="s3-3"></a>
 ## 3.3 Servlet Packages, Classes, Interfaces & Methods
 
 ```
@@ -1367,10 +1501,13 @@ Key classes:
 - `ServletConfig` — holds init parameters **specific to one servlet** (defined in that servlet's `<init-param>` in `web.xml`); scope is that single servlet.
 - `ServletContext` — holds parameters and shared attributes **for the entire web application** (`<context-param>`); scope is application-wide, shared by all servlets/JSPs in that app.
 
-🔗 **GFG:** https://www.geeksforgeeks.org/?s=servletconfig+vs+servletcontext
+> 📖 **GFG:** [ServletConfig vs ServletContext](https://www.geeksforgeeks.org/?s=servletconfig+vs+servletcontext)
+
+[⬆ TOC](#toc)
 
 ---
 
+<a id="s3-4"></a>
 ## 3.4 Handling Forms with a Servlet
 
 ```html
@@ -1403,10 +1540,13 @@ public class RegisterServlet extends HttpServlet {
 
 **Explain `GET` vs `POST` here (common follow-up):** `GET` appends form data to the URL as a query string (visible, limited length, cacheable) — used for `doGet()`; `POST` sends form data in the request body (hidden from the URL, no size limit, not cached by default) — used for `doPost()`. The `method` attribute in the `<form>` tag decides which one the browser uses, and correspondingly which servlet method handles it.
 
-🔗 **GFG:** https://www.geeksforgeeks.org/?s=handling+form+data+in+servlet
+> 📖 **GFG:** [Handling Form Data in Servlet](https://www.geeksforgeeks.org/?s=handling+form+data+in+servlet)
+
+[⬆ TOC](#toc)
 
 ---
 
+<a id="s3-5"></a>
 ## 3.5 Session Handling — Various Methods
 
 **Definition:** Since HTTP is stateless, _session tracking_ refers to techniques used to maintain a user's state/data across multiple requests. Java Servlets provide four such methods.
@@ -1448,10 +1588,13 @@ public class SessionServlet extends HttpServlet {
 3. **URL Rewriting** — the session ID is appended directly to every URL as a query parameter, used as a fallback when the client has disabled cookies.
 4. **Hidden form fields** — session data is embedded as invisible fields inside forms and resubmitted with every form post — only works for form-driven navigation, not general page-to-page browsing.
 
-🔗 **GFG:** https://www.geeksforgeeks.org/?s=session+tracking+in+servlet
+> 📖 **GFG:** [Session Tracking in Servlet](https://www.geeksforgeeks.org/?s=session+tracking+in+servlet)
+
+[⬆ TOC](#toc)
 
 ---
 
+<a id="s3-6"></a>
 ## 3.6 Elements of Deployment Descriptors
 
 ```xml
@@ -1471,14 +1614,17 @@ public class SessionServlet extends HttpServlet {
 
 **Definition to open with:** The Deployment Descriptor (`web.xml`) is an XML configuration file that tells the Servlet container how to deploy and manage a web application — which servlets exist, what URLs map to them, session timeout, security rules, etc. — without requiring changes to the Java source code.
 
-🔗 **GFG:** https://www.geeksforgeeks.org/?s=web.xml+deployment+descriptor
+> 📖 **GFG:** [web.xml Deployment Descriptor](https://www.geeksforgeeks.org/?s=web.xml+deployment+descriptor)
+
+[⬆ TOC](#toc)
 
 ---
-
 ---
 
+<a id="unit-4"></a>
 # UNIT-IV: JSP & Database-Backed Web Apps
 
+<a id="s4-1"></a>
 ## 4.1 JSP Basics
 
 **Definition:** JSP (JavaServer Pages) is a technology that allows embedding Java code directly inside HTML pages; the container internally translates each JSP page into a Servlet the first time it is requested, so **a JSP is really just a Servlet written in a more HTML-friendly way**.
@@ -1493,7 +1639,7 @@ public class SessionServlet extends HttpServlet {
 5. jspDestroy() → called once, like a servlet's destroy()
 ```
 
-**Explain why JSP exists alongside Servlets (common "why JSP" question):** Writing HTML output using `out.println()` inside a servlet becomes extremely messy for large pages. JSP flips this around — you write mostly HTML, with small chunks of embedded Java where dynamic content is needed — which is why JSP is preferred for the **View** layer, while Servlets are preferred for the **Controller** (see MVC, Section 5.1).
+**Explain why JSP exists alongside Servlets (common "why JSP" question):** Writing HTML output using `out.println()` inside a servlet becomes extremely messy for large pages. JSP flips this around — you write mostly HTML, with small chunks of embedded Java where dynamic content is needed — which is why JSP is preferred for the **View** layer, while Servlets are preferred for the **Controller** (see MVC, [Section 5.1](#s5-1)).
 
 ### Directives
 
@@ -1524,8 +1670,8 @@ public class SessionServlet extends HttpServlet {
 
 **Three scripting elements compared (good direct-answer table):**
 
-| Element     | Syntax       | Purpose                                                               |
-| ----------- | ------------ | --------------------------------------------------------------------- |
+| Element     | Syntax       | Purpose                                                                 |
+| ------------- | -------------- | ---------------------------------------------------------------------- |
 | Scriptlet   | `<% ... %>`  | Embed a block of plain Java code (statements)                         |
 | Expression  | `<%= ... %>` | Evaluate an expression and print its result directly into the output  |
 | Declaration | `<%! ... %>` | Declare a field or method at the class level of the generated servlet |
@@ -1545,7 +1691,7 @@ public class SessionServlet extends HttpServlet {
 **Definition:** Implicit objects are objects automatically made available inside every JSP page by the container, without needing to be declared — because they're all pre-defined as local variables inside the auto-generated `_jspService()` method.
 
 | Object        | Type                  | Purpose                                    |
-| ------------- | --------------------- | ------------------------------------------ |
+| --------------- | ----------------------- | --------------------------------------------- |
 | `request`     | `HttpServletRequest`  | Incoming request data                      |
 | `response`    | `HttpServletResponse` | Outgoing response                          |
 | `session`     | `HttpSession`         | Per-user session                           |
@@ -1568,10 +1714,13 @@ public class SessionServlet extends HttpServlet {
 
 **Exam tip:** There are **9 implicit objects** total — list all 9 with their types when asked, since partial answers lose easy marks here.
 
-🔗 **GFG:** https://www.geeksforgeeks.org/?s=jsp+implicit+objects
+> 📖 **GFG:** [JSP Implicit Objects](https://www.geeksforgeeks.org/?s=jsp+implicit+objects)
+
+[⬆ TOC](#toc)
 
 ---
 
+<a id="s4-2"></a>
 ## 4.2 JSP/Servlet Database Connectivity — Oracle, MS-SQL, MySQL
 
 ```java
@@ -1639,18 +1788,21 @@ try (Connection conn = DriverManager.getConnection(url, user, pass)) {
 
 ### Types of Statement
 
-| Type                | Use Case                                                                         |
-| ------------------- | -------------------------------------------------------------------------------- |
+| Type                | Use Case                                                                           |
+| --------------------- | --------------------------------------------------------------------------------- |
 | `Statement`         | Static SQL, no parameters — vulnerable to SQL injection, avoid for user input    |
 | `PreparedStatement` | Precompiled, parameterized (`?` placeholders) — faster on repeat, injection-safe |
 | `CallableStatement` | Calls stored procedures (`{call procName(?, ?)}`)                                |
 
 **Why `PreparedStatement` prevents SQL injection (explain the mechanism, not just the fact):** With `Statement`, user input is concatenated directly into the SQL string, so malicious input like `' OR '1'='1` can alter the query's logic. With `PreparedStatement`, the SQL query structure is compiled _first_ with placeholders (`?`), and the user-supplied values are then bound to those placeholders as pure _data_ — they can never be interpreted as SQL syntax, which is what blocks injection attacks.
 
-🔗 **GFG:** https://www.geeksforgeeks.org/?s=jdbc+preparedstatement+vs+statement
+> 📖 **GFG:** [JDBC PreparedStatement vs Statement](https://www.geeksforgeeks.org/?s=jdbc+preparedstatement+vs+statement)
+
+[⬆ TOC](#toc)
 
 ---
 
+<a id="s4-3"></a>
 ## 4.3 Separating Business Logic and Presentation Logic
 
 ```
@@ -1663,7 +1815,7 @@ Good (JavaBean/DAO handles logic, JSP only PRESENTS):
    JSP                → simply loops over the attribute and renders HTML (no direct DB code)
 ```
 
-**Why this separation matters (theory point, often asked):** Mixing database/business logic directly into JSP makes the page hard to read, hard to maintain, and impossible to reuse the logic elsewhere — it violates the _separation of concerns_ principle. Moving logic into JavaBeans/DAO classes (and orchestrating them from a Servlet Controller) means the JSP's only job is rendering — this is the foundational idea behind the **MVC pattern** (Section 5.1).
+**Why this separation matters (theory point, often asked):** Mixing database/business logic directly into JSP makes the page hard to read, hard to maintain, and impossible to reuse the logic elsewhere — it violates the _separation of concerns_ principle. Moving logic into JavaBeans/DAO classes (and orchestrating them from a Servlet Controller) means the JSP's only job is rendering — this is the foundational idea behind the **MVC pattern** ([Section 5.1](#s5-1)).
 
 ### Building and Using a JavaBean
 
@@ -1699,13 +1851,16 @@ public class StudentBean implements Serializable {
 
 **JavaBean naming convention (list this for full marks):** For a private field `name`, the getter must be `getName()` (or `isName()` for a `boolean`) and the setter must be `setName(String name)` — this strict naming convention is what allows tools like `<jsp:setProperty property="*"/>` to automatically match incoming request parameters to bean properties via reflection.
 
-🔗 **GFG:** https://www.geeksforgeeks.org/?s=javabeans+in+java
+> 📖 **GFG:** [JavaBeans in Java](https://www.geeksforgeeks.org/?s=javabeans+in+java)
+
+[⬆ TOC](#toc)
 
 ---
 
+<a id="s4-4"></a>
 ## 4.4 Session Handling in JSP
 
-Identical mechanisms to Servlets (Section 3.5), accessed via the implicit `session` object:
+Identical mechanisms to Servlets ([Section 3.5](#s3-5)), accessed via the implicit `session` object:
 
 ```jsp
 <%
@@ -1715,10 +1870,13 @@ Identical mechanisms to Servlets (Section 3.5), accessed via the implicit `sessi
 Welcome back, <%= session.getAttribute("username") %>!
 ```
 
-🔗 **GFG:** https://www.geeksforgeeks.org/?s=session+handling+in+jsp
+> 📖 **GFG:** [Session Handling in JSP](https://www.geeksforgeeks.org/?s=session+handling+in+jsp)
+
+[⬆ TOC](#toc)
 
 ---
 
+<a id="s4-5"></a>
 ## 4.5 Types of Errors and Exception Handling (JSP)
 
 ```jsp
@@ -1739,14 +1897,17 @@ Welcome back, <%= session.getAttribute("username") %>!
 2. **Compilation-time errors** — occur when the embedded Java code (inside scriptlets/expressions) is syntactically invalid, so the auto-generated servlet source fails to compile.
 3. **Runtime exceptions** — occur while the servlet is executing (e.g., `NullPointerException`, `SQLException`, `ArithmeticException`); these are handled using `errorPage`/`isErrorPage` attributes for a specific page, or the `<error-page>` element in `web.xml` for status-code-based handling (like custom 404/500 pages) across the whole application.
 
-🔗 **GFG:** https://www.geeksforgeeks.org/?s=exception+handling+in+jsp
+> 📖 **GFG:** [Exception Handling in JSP](https://www.geeksforgeeks.org/?s=exception+handling+in+jsp)
+
+[⬆ TOC](#toc)
 
 ---
-
 ---
 
+<a id="unit-5"></a>
 # UNIT-V: MVC, RMI & EJB
 
+<a id="s5-1"></a>
 ## 5.1 MVC Architecture
 
 **Definition:** MVC (Model-View-Controller) is a software design pattern that separates an application into three interconnected components, so that each can be developed, tested, and modified independently.
@@ -1766,7 +1927,7 @@ Welcome back, <%= session.getAttribute("username") %>!
 **Explain each component (write this exactly in exam):**
 
 - **Model** — represents the application's data and business logic, implemented as JavaBeans and DAO (Data Access Object) classes. It has no knowledge of how the data is displayed.
-- **View** — the presentation layer, implemented as JSP pages; purely responsible for rendering HTML from data it is given (Section 4.3) and contains no business logic.
+- **View** — the presentation layer, implemented as JSP pages; purely responsible for rendering HTML from data it is given ([Section 4.3](#s4-3)) and contains no business logic.
 - **Controller** — implemented as a Servlet; it receives the incoming HTTP request, invokes the appropriate Model method(s) to perform business logic, and then forwards control to the appropriate View using `RequestDispatcher.forward()`.
 
 ```java
@@ -1789,10 +1950,13 @@ public class StudentController extends HttpServlet {
 3. **Parallel development** — frontend developers can work on Views while backend developers work on the Model/Controller simultaneously.
 4. **Reusability** — the same Model can be reused with different Views (e.g., an HTML view and a mobile app view).
 
-🔗 **GFG:** https://www.geeksforgeeks.org/?s=mvc+architecture+java
+> 📖 **GFG:** [MVC Architecture in Java](https://www.geeksforgeeks.org/?s=mvc+architecture+java)
+
+[⬆ TOC](#toc)
 
 ---
 
+<a id="s5-2"></a>
 ## 5.2 Introduction to Remote Method Invocation (RMI)
 
 **Definition:** RMI (Remote Method Invocation) is a Java API that allows an object running in one JVM to invoke a method on an object running in a _different_ JVM — potentially on a completely different physical machine — making the remote call look and behave like a normal local method call.
@@ -1863,10 +2027,13 @@ Client → Stub (local proxy) → Network → Skeleton/Registry → Remote Objec
 3. Register the implementation object with the **RMI Registry** on the server (`Registry.rebind()`).
 4. On the client, **look up** the remote object by name via the registry and invoke its methods as if it were local.
 
-🔗 **GFG:** https://www.geeksforgeeks.org/?s=rmi+in+java
+> 📖 **GFG:** [RMI in Java](https://www.geeksforgeeks.org/?s=rmi+in+java)
+
+[⬆ TOC](#toc)
 
 ---
 
+<a id="s5-3"></a>
 ## 5.3 Introduction to Enterprise JavaBeans (EJB)
 
 **Definition:** EJB (Enterprise JavaBean) is a server-side, managed component model (part of Jakarta EE) used to build distributed, transactional, and secure business logic — the EJB **container** automatically handles cross-cutting concerns like concurrency, transactions, security, and object lifecycle, so the developer can focus purely on writing business logic.
@@ -1952,55 +2119,64 @@ public class CalcServlet extends HttpServlet {
 
 **RMI vs EJB (a good comparison to add if a question compares distributed technologies):**
 
-| RMI                                                                  | EJB                                                                            |
-| -------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| RMI                                                                  | EJB                                                                              |
+| ----------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
 | Low-level remote invocation mechanism                                | High-level, managed component model built on top of remote-invocation concepts |
 | No built-in transaction/security management — must be coded manually | Container automatically provides transactions, security, pooling               |
 | Developer manages the object's lifecycle                             | Container manages the bean's lifecycle                                         |
 
-🔗 **GFG:** https://www.geeksforgeeks.org/?s=enterprise+java+beans+ejb
+> 📖 **GFG:** [Enterprise Java Beans (EJB)](https://www.geeksforgeeks.org/?s=enterprise+java+beans+ejb)
+
+[⬆ TOC](#toc)
 
 ---
+---
 
+<a id="resources"></a>
 # 📚 Recommended Resources (Books + Official Docs)
 
 | Resource                                                                      | Covers                                           |
-| ----------------------------------------------------------------------------- | ------------------------------------------------ |
+| ---------------------------------------------------------------------------- | -------------------------------------------------- |
 | _Java: The Complete Reference_ — Herbert Schildt                              | Unit I & II                                      |
 | _Head First Servlets & JSP_                                                   | Unit III & IV                                    |
 | _Head First EJB_ / Oracle Jakarta EE Tutorial                                 | Unit V                                           |
-| [docs.oracle.com/javase](https://docs.oracle.com/en/java/javase/)             | Core Java API reference                          |
-| [Jakarta EE Specifications](https://jakarta.ee/specifications/)               | Servlet, JSP, EJB specs                          |
-| [Apache Tomcat Docs](https://tomcat.apache.org/tomcat-10.1-doc/)              | Server setup & deployment                        |
-| [GeeksforGeeks Java Tutorial (hub page)](https://www.geeksforgeeks.org/java/) | Everything, unit-by-unit with practice questions |
+| [docs.oracle.com/javase](https://docs.oracle.com/en/java/javase/) `[Verified — official Oracle docs]`             | Core Java API reference                          |
+| [Jakarta EE Specifications](https://jakarta.ee/specifications/) `[Verified — official spec]`               | Servlet, JSP, EJB specs                          |
+| [Apache Tomcat Docs](https://tomcat.apache.org/tomcat-10.1-doc/) `[Verified — official Tomcat docs]`              | Server setup & deployment                        |
+| [GeeksforGeeks Java Tutorial (hub page)](https://www.geeksforgeeks.org/java/) `[Verified — GFG Java hub]` | Everything, unit-by-unit with practice questions |
+
+[⬆ TOC](#toc)
 
 ---
 
+<a id="checklist"></a>
 # 🎯 Quick Exam-Day Revision Checklist
 
 Before the exam, make sure you can write these from memory (they cover ~70% of typical M.Tech Java papers):
 
-- [ ] Features of Java (top 6 with 2 lines each)
-- [ ] JDK vs JRE vs JVM
-- [ ] Primitive data types table (size, default, range)
-- [ ] JVM memory areas diagram (Heap, Stack, Method Area, PC Register, Native Stack)
-- [ ] Widening vs Narrowing conversion
-- [ ] String vs StringBuffer vs StringBuilder table
-- [ ] Why String is immutable (4 reasons)
-- [ ] Method overloading resolution order
-- [ ] Access modifier table (private/default/protected/public)
-- [ ] Checked vs Unchecked exceptions table
-- [ ] Thread creation: extends Thread vs implements Runnable
-- [ ] Thread life cycle diagram + states table
-- [ ] JDBC driver types (1–4) and steps to connect
-- [ ] Web Server vs Application Server
-- [ ] Servlet life cycle: init() → service() → destroy()
-- [ ] Session tracking: all 4 methods
-- [ ] JSP implicit objects (all 9)
-- [ ] Statement vs PreparedStatement vs CallableStatement
-- [ ] MVC architecture diagram + role of each layer
-- [ ] RMI architecture (Stub/Skeleton/Registry) + 4 steps to build an RMI app
-- [ ] Types of EJB (Stateless/Stateful/Singleton/MDB) with analogies
+- [ ] [Features of Java](#s1-1) (top 6 with 2 lines each)
+- [ ] [JDK vs JRE vs JVM](#s1-3)
+- [ ] [Primitive data types table](#s1-5) (size, default, range)
+- [ ] [JVM memory areas diagram](#s1-6) (Heap, Stack, Method Area, PC Register, Native Stack)
+- [ ] [Widening vs Narrowing conversion](#s1-10)
+- [ ] [String vs StringBuffer vs StringBuilder table](#s1-12)
+- [ ] Why String is immutable (4 reasons) — [see 1.12](#s1-12)
+- [ ] [Method overloading resolution order](#s1-11)
+- [ ] [Access modifier table](#s2-2) (private/default/protected/public)
+- [ ] [Checked vs Unchecked exceptions table](#s2-3)
+- [ ] [Thread creation: extends Thread vs implements Runnable](#s2-4)
+- [ ] [Thread life cycle diagram + states table](#s2-4)
+- [ ] [JDBC driver types (1–4) and steps to connect](#s2-6)
+- [ ] [Web Server vs Application Server](#s3-1)
+- [ ] [Servlet life cycle: init() → service() → destroy()](#s3-2)
+- [ ] [Session tracking: all 4 methods](#s3-5)
+- [ ] [JSP implicit objects (all 9)](#s4-1)
+- [ ] [Statement vs PreparedStatement vs CallableStatement](#s4-2)
+- [ ] [MVC architecture diagram + role of each layer](#s5-1)
+- [ ] [RMI architecture (Stub/Skeleton/Registry) + 4 steps to build an RMI app](#s5-2)
+- [ ] [Types of EJB (Stateless/Stateful/Singleton/MDB) with analogies](#s5-3)
+
+[⬆ TOC](#toc)
 
 ---
 
