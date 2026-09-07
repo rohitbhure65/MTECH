@@ -908,6 +908,15 @@ java Main
 - An **interface** declares only method signatures (abstract by default) — before Java 8 it could have no implementation at all; a class `implements` an interface and must provide bodies for all its methods, and a class can implement _multiple_ interfaces (achieving a form of multiple inheritance).
 - An **abstract class** can have both abstract and concrete (fully implemented) methods, and a class can `extend` only _one_ abstract class.
 
+
+| Abstract class    | Interface |
+| ------------- | ------------ |
+|  Can not Support multiple inheritance  | Support multiple inheritance         |
+| Can have constructor | Can't have constructor         |
+| Can make function with the body | Only allow function signature         |
+| Can make static function    | Static Function not allowed        |
+| Can make private functions    | Private Function not allowed        |
+
 > 📖 **GFG:** [Packages and Interfaces in Java](https://www.geeksforgeeks.org/?s=packages+and+interfaces+in+java)
 
 [⬆ TOC](#toc)
