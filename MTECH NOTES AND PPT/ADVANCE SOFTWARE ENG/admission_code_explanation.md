@@ -1,9 +1,12 @@
 # Admission Software - Code Explanation (Hinglish)
 
-Yeh folder ek bohot detailed OOPs (Object-Oriented Programming) based admission system design karta hai. Yeh University/College me multiple programs, departments, students, normalizers (scoring system ko normalize karne ke liye), aur merit generation manage karta hai.
+Yeh folder ek bohot hi detailed OOPs (Object-Oriented Programming) based admission system design karta hai. Yeh University/College me multiple programs, departments, students, normalizers, aur merit generation manage karta hai.
+
+**Sir ko impress karne ke liye main point:** Sir ko batana ki yeh ek dum **"Enterprise/Production level"** ka code hai. Isme humne **"Strategy Design Pattern"** (Normalizers aur Merit Calculators) ka use kiya hai taaki kal ko agar admission ke rules (jaise grading system) change ho toh purana code chedne ki zarurat na pade, bas nayi class bana lo. Aur saara memory management **`shared_ptr`** se kiya hai jisse safety milti hai.
 
 ## 1. `Curriculum.h`
-Yeh class program/degree ka curriculum define karti hai, jisme semesters, credits, aur subjects ki list hoti hai.
+Yeh class program/degree ka curriculum define karti hai. (Course me kitne semesters hain aur kya padhaya jayega).
+
 ```cpp
 #pragma once
 #include <string>
@@ -12,18 +15,20 @@ Yeh class program/degree ka curriculum define karti hai, jisme semesters, credit
 using namespace std;
 
 class Curriculum {
-    int totalSemesters;
-    int totalCredits;
-    vector<string> subjects;
+    int totalSemesters; // Kitne sem honge
+    int totalCredits;   // Total kitne credits ki degree hai
+    vector<string> subjects; // Subjects ki list
 
 public:
+    // Constructor initialize karta hai sari values ko
     Curriculum(int totalSemesters, int totalCredits, const vector<string>& subjects)
         : totalSemesters(totalSemesters), totalCredits(totalCredits), subjects(subjects) {}
 };
 ```
 
 ## 2. `Qualification.h`
-Student ki pass ki hui ek degree ki details store karta hai jaise passing year, marks (CGPA/Percentage), aur type ("HIGH_SCHOOL", "BACHELORS", "GATE"). GATE jaise special exams ki detail bhi store karta hai.
+Yeh bohot important hai. Ek student ki pass ki hui ek degree ki details store karta hai (jaise 12th marks, ya GATE score).
+
 ```cpp
 #pragma once
 #include <string>
@@ -31,19 +36,20 @@ Student ki pass ki hui ek degree ki details store karta hai jaise passing year, 
 using namespace std;
 
 class Qualification {
-    string degreeName;
-    double cgpaOrPercentage;
-    string institution;
-    int yearOfPassing;
-    string type;
-    bool specialExamQualified;
-    double specialExamScore;
+    string degreeName; // Jaise "High School", "BCA"
+    double cgpaOrPercentage; // Kitne marks aaye
+    string institution; // Kahan se ki
+    int yearOfPassing; 
+    string type; // Type jaise "HIGH_SCHOOL", "BACHELORS", "GATE"
+    bool specialExamQualified; // Jaise GATE/JEE nikal gaya kya?
+    double specialExamScore; // Agar GATE diya toh score kya tha?
 
 public:
-    // Constructor parameters init karta hai
+    // Constructor (specialExam defaults ko false aur 0.0 pe rakhta hai agar pass nahi kiye)
     Qualification(string degreeName, double cgpaOrPercentage, string institution, int yearOfPassing, string type, bool specialExamQualified = false, double specialExamScore = 0.0)
         : degreeName(degreeName), cgpaOrPercentage(cgpaOrPercentage), institution(institution), yearOfPassing(yearOfPassing), type(type), specialExamQualified(specialExamQualified), specialExamScore(specialExamScore) {}
 
+    // Getters
     double getCgpaOrPercentage() const { return cgpaOrPercentage; }
     bool isSpecialExamQualified() const { return specialExamQualified; }
     double getSpecialExamScore() const { return specialExamScore; }
@@ -55,7 +61,8 @@ public:
 ```
 
 ## 3. `Student.h`
-Student ki personal details aur uske qualifications ki ek array (vector) store karta hai. Ek student ke multiple qualifications ho sakte hain jaise 12th + B.Tech + GATE.
+Student ki personal details aur uske qualifications ki ek **list** (vector) store karta hai. (Kyonki ek bache ke paas 10th, 12th, B.Tech teeno ho sakte hain).
+
 ```cpp
 #pragma once
 #include <string>
@@ -67,7 +74,7 @@ using namespace std;
 class Student {
     string id;
     string name;
-    vector<Qualification> qualifications; // Array of degrees
+    vector<Qualification> qualifications; // Bachhe ki sari degrees ka array
 
 public:
     Student(string id, string name) : id(id), name(name) {}
@@ -77,14 +84,14 @@ public:
         qualifications.push_back(q);
     }
 
-    // Specific type ("GATE", "BACHELORS") ki qualification search karna
+    // Check karna ki kya bachhe ke paas specific degree (jaise "BACHELORS") hai ya nahi
     const Qualification* getQualification(const string& type) const {
         for (const auto& q : qualifications) {
             if (q.getType() == type) {
-                return &q;
+                return &q; // Pointer return kar diya agar mil gayi
             }
         }
-        return nullptr;
+        return nullptr; // Warna Null return karega
     }
 
     string getId() const { return id; }
@@ -92,19 +99,22 @@ public:
 };
 ```
 
-## 4. `ScoreNormalizer.h`
-Ek interface (base class) jiska function marks ko normalize karta hai (e.g. 10 point CGPA ko percentage me convert karna).
+## 4. `ScoreNormalizer.h` (The Interface)
+Alag-alag universities alag grading karti hain. Yeh interface marks ko normalize (ek level par laane) ke liye hai.
+
 ```cpp
 #pragma once
 class ScoreNormalizer {
 public:
+    // Abstract function: Jo child hoga wo ise override karega
     virtual double normalize(double score) const = 0;
     virtual ~ScoreNormalizer() = default;
 };
 ```
 
-## 5. `PassThroughNormalizer.h` & `IndianCGPANormalizer.h`
-Yeh dono classes `ScoreNormalizer` ko implement karti hain. `PassThroughNormalizer` exact same marks wapis bhejta hai (no change). `IndianCGPANormalizer` agar score <= 10.0 hai, to usko 9.5 se multiply karke percentage me convert karta hai.
+## 5. Normalizer Implementations
+Yeh `ScoreNormalizer` ko use karke alag alag logic lagate hain. (Strategy Pattern ka use yahan hai).
+
 ```cpp
 // PassThroughNormalizer.h
 #pragma once
@@ -113,7 +123,7 @@ Yeh dono classes `ScoreNormalizer` ko implement karti hain. `PassThroughNormaliz
 class PassThroughNormalizer : public ScoreNormalizer {
 public:
     double normalize(double score) const override {
-        return score; // Koi conversion nahi
+        return score; // Jo marks the wahi de diye (No change)
     }
 };
 
@@ -124,18 +134,20 @@ public:
 class IndianCGPANormalizer : public ScoreNormalizer {
 public:
     double normalize(double score) const override {
+        // Agar CGPA hai (10 se chota), toh usko 9.5 se multiply karke Percentage bana do (CBSE/Indian Rule)
         if (score <= 10.0) {
-            return score * 9.5; // CGPA ko percentage mein convert karne ka Indian standard rule
+            return score * 9.5; 
         }
         return score;
     }
 };
 ```
 
-## 6. `EligibilityChecker.h` & `BasicEligibilityChecker.h`
-Eligibility check karne ke classes hain. `BasicEligibilityChecker` ensure karta hai ki given qualification (e.g., "HIGH_SCHOOL") mein student ka score normalizer ke hisab se minimum percentage requirement ko cross kare.
+## 6. Eligibility Checkers
+Check karte hain ki admission form accept hoga ya reject.
+
 ```cpp
-// EligibilityChecker.h
+// EligibilityChecker.h (Abstract Interface)
 #pragma once
 #include <string>
 #include "Student.h"
@@ -144,8 +156,8 @@ using namespace std;
 
 class EligibilityChecker {
 public:
-    virtual bool isEligible(const Student& student) const = 0;
-    virtual string getRejectionReason(const Student& student) const = 0;
+    virtual bool isEligible(const Student& student) const = 0; // Eligible hai?
+    virtual string getRejectionReason(const Student& student) const = 0; // Agar nahi, toh kyu?
     virtual ~EligibilityChecker() = default;
 };
 
@@ -159,24 +171,25 @@ public:
 using namespace std;
 
 class BasicEligibilityChecker : public EligibilityChecker {
-    string requiredType; // Kaunsi degree chahiye apply karne ke liye
-    double minPercentage; // Minimum kitne marks chahiye
-    shared_ptr<ScoreNormalizer> normalizer;
+    string requiredType; // Kaunsi degree chahiye? (E.g. "HIGH_SCHOOL")
+    double minPercentage; // Minimum kitne %? (E.g. 50%)
+    shared_ptr<ScoreNormalizer> normalizer; // Marks theek karne wali machine
 
 public:
     BasicEligibilityChecker(string requiredType, double minPercentage, shared_ptr<ScoreNormalizer> normalizer)
         : requiredType(requiredType), minPercentage(minPercentage), normalizer(normalizer) {}
 
-    // Check karta hai agar student allowed hai ya nahi
+    // Check eligibility
     bool isEligible(const Student& student) const override {
         const Qualification* q = student.getQualification(requiredType);
-        if (!q) return false;
+        if (!q) return false; // Degree hi nahi hai toh seedha reject
         
+        // Marks theek karke check karo ki minimum % cross kar raha hai kya
         double score = normalizer->normalize(q->getCgpaOrPercentage());
         return score >= minPercentage;
     }
 
-    // Reject hone ka reason batata hai string format mein
+    // Reason dena (Kyu reject hua)
     string getRejectionReason(const Student& student) const override {
         const Qualification* q = student.getQualification(requiredType);
         if (!q) return "Missing required qualification";
@@ -190,12 +203,11 @@ public:
 };
 ```
 
-## 7. `MeritCalculator.h`, `StandardMeritCalculator.h`, & `GatePreferenceMeritCalculator.h`
-Yeh classes final selection (Merit list) ke time students ko score assign karti hain, taaki highest score waala pehle select ho.
-- `StandardMeritCalculator` ek given qualification ka normalized score deta hai.
-- `GatePreferenceMeritCalculator` B.Tech ke score ka 60% aur GATE exam ke score ka 40% weightage lekar total marks deta hai (agar usne GATE clear kiya hai, otherwise 60% hi milta hai).
+## 7. Merit Calculators
+Rank list banane ke liye scores assign karte hain.
+
 ```cpp
-// MeritCalculator.h
+// MeritCalculator.h (Abstract Interface)
 #pragma once
 #include "Student.h"
 
@@ -205,7 +217,7 @@ public:
     virtual ~MeritCalculator() = default;
 };
 
-// StandardMeritCalculator.h
+// StandardMeritCalculator.h (Normal ranking)
 #pragma once
 #include <string>
 #include <memory>
@@ -226,11 +238,12 @@ public:
         const Qualification* q = student.getQualification(baseQualification);
         if (!q) return 0.0;
         
-        return normalizer->normalize(q->getCgpaOrPercentage()); // Normal marks ko as merit return karta hai
+        // Seedha normalized percentage pass kardo as a Rank Score
+        return normalizer->normalize(q->getCgpaOrPercentage()); 
     }
 };
 
-// GatePreferenceMeritCalculator.h
+// GatePreferenceMeritCalculator.h (M.Tech rank logic)
 #pragma once
 #include <memory>
 #include "MeritCalculator.h"
@@ -244,7 +257,7 @@ class GatePreferenceMeritCalculator : public MeritCalculator {
 public:
     GatePreferenceMeritCalculator(shared_ptr<ScoreNormalizer> normalizer) : normalizer(normalizer) {}
 
-    // GATE score calculation
+    // Agar bachhe ne GATE kiya hai toh score badh jayega.
     double calculateMerit(const Student& student) const override {
         const Qualification* bachelors = student.getQualification("BACHELORS");
         if (!bachelors) return 0.0;
@@ -252,16 +265,19 @@ public:
         double baseScore = normalizer->normalize(bachelors->getCgpaOrPercentage());
         
         const Qualification* gate = student.getQualification("GATE");
+        // Rule: UG ka 60% weightage, GATE ka 40% weightage mila ke final score banega.
         if (gate && gate->isSpecialExamQualified()) {
-            return (baseScore * 0.6) + (gate->getSpecialExamScore() * 0.4); // 60% UG + 40% GATE weightage
+            return (baseScore * 0.6) + (gate->getSpecialExamScore() * 0.4); 
         }
+        // Agar GATE clear nahi kiya toh bas UG ka 60% milega (Merit gir jayegi)
         return baseScore * 0.6;
     }
 };
 ```
 
-## 8. `Program.h` & `Department.h`
-Ek `Department` me bohot saare `Program` (MCA, BCA, M.Tech) hote hain. `Program` class apne saath uska curriculum aur eligibility checker store karti hai.
+## 8. Program & Department Classes
+College ka structure banate hain.
+
 ```cpp
 // Program.h
 #pragma once
@@ -273,10 +289,10 @@ Ek `Department` me bohot saare `Program` (MCA, BCA, M.Tech) hote hain. `Program`
 using namespace std;
 
 class Program {
-    string name;
-    string type;
-    shared_ptr<Curriculum> curriculum;
-    shared_ptr<EligibilityChecker> eligibilityChecker;
+    string name; // Jaise BCA
+    string type; // Jaise UG
+    shared_ptr<Curriculum> curriculum; // Iska syllabus (Composition)
+    shared_ptr<EligibilityChecker> eligibilityChecker; // Isme admission ka rule (Composition)
 
 public:
     Program(string name, string type, shared_ptr<Curriculum> curriculum, shared_ptr<EligibilityChecker> eligibilityChecker)
@@ -298,8 +314,8 @@ public:
 using namespace std;
 
 class Department {
-    string name;
-    vector<shared_ptr<Program>> offeredPrograms;
+    string name; // Jaise "Computer Science"
+    vector<shared_ptr<Program>> offeredPrograms; // Program ki list jo ye department chalata hai
 
 public:
     Department(string name) : name(name) {}
@@ -313,7 +329,8 @@ public:
 ```
 
 ## 9. `AdmissionProcess.h`
-Yeh application process, merit ranking, aur seat limits ko check karke admissions grant karta hai.
+Asli process class, yeh forms leti hai, reject karti hai aur merit banati hai.
+
 ```cpp
 #pragma once
 #include <iostream>
@@ -332,8 +349,8 @@ class AdmissionProcess {
     int academicYear;
     shared_ptr<Program> program;
     shared_ptr<Department> department;
-    int seatCapacity;
-    shared_ptr<MeritCalculator> meritCalculator;
+    int seatCapacity; // Total khali seats
+    shared_ptr<MeritCalculator> meritCalculator; // Ranking system
     vector<Student*> applicants;
     vector<Student*> admittedStudents;
 
@@ -341,11 +358,12 @@ public:
     AdmissionProcess(int academicYear, shared_ptr<Program> program, shared_ptr<Department> department, int seatCapacity, shared_ptr<MeritCalculator> meritCalculator)
         : academicYear(academicYear), program(program), department(department), seatCapacity(seatCapacity), meritCalculator(meritCalculator) {}
 
-    // Student jab program ke liye apply kare
+    // Form Apply Process
     void apply(Student& student) {
         auto checker = program->getEligibilityChecker();
-        // Check karta hai agar eligible hai ya reject ho gaya
+        // Check karta hai eligible hai ya nahi
         if (checker && !checker->isEligible(student)) {
+            // Nahi hai toh seedha print "Application Rejected" and Reason
             cout << "Application Rejected for " << student.getName() << " -> " << checker->getRejectionReason(student) << endl;
             return;
         }
@@ -353,9 +371,9 @@ public:
         applicants.push_back(&student);
     }
 
-    // Merit list banana aur admission dena seat availability ke hisab se
+    // Merit Ranking
     void generateMeritListAndAdmit() {
-        // Merit calculator ka use karke sorting (Descending order mein)
+        // Merit calculator se score mangwa kar Sort function ko call kiya
         sort(applicants.begin(), applicants.end(), [this](Student* s1, Student* s2) {
             return meritCalculator->calculateMerit(*s1) > meritCalculator->calculateMerit(*s2);
         });
@@ -365,7 +383,9 @@ public:
         for (Student* s : applicants) {
             double score = meritCalculator->calculateMerit(*s);
             cout << s->getName() << " - Score: " << score << endl;
-            if (count < seatCapacity) { // Agar seats hain tabhi admission
+            
+            // Seat mili toh admit ho gaya
+            if (count < seatCapacity) { 
                 admittedStudents.push_back(s);
                 count++;
             }
@@ -373,7 +393,7 @@ public:
         cout << "-------------------------------------------------" << endl;
     }
 
-    // Admitted students ka list print karna
+    // Sirf admit hue students ke naam print karna
     void printAdmittedStudents() const {
         cout << "Admitted Students to " << program->getName() << " (" << academicYear << "):" << endl;
         for (Student* s : admittedStudents) {
@@ -384,7 +404,8 @@ public:
 ```
 
 ## 10. `main.cpp`
-Main file mein hum un saare classes ko use karte hain admission process ko test karne ke liye (BCA, MCA, MTech mein admissions).
+Yeh driver file hai jahan sab object bante hain.
+
 ```cpp
 #include <iostream>
 #include <memory>
@@ -410,60 +431,63 @@ using namespace std;
 int main() {
     cout << "=== Generalized Student Admission & Program Registration System ===" << endl;
 
+    // 1. Department Banaya
     auto scsitDept = make_shared<Department>("School of Computer Science & IT (DAVV)");
 
-    // Curriculum banaya gaya
+    // 2. Syllabus (Curriculum) Banaya
     auto bcaCurriculum = make_shared<Curriculum>(6, 120, vector<string>{"Programming in C", "Database Management", "Web Technologies"});
     auto mtechCsCurriculum = make_shared<Curriculum>(4, 80, vector<string>{"Advanced ML", "Distributed Systems", "Cloud Computing"});
     auto mcaCurriculum = make_shared<Curriculum>(4, 80, vector<string>{"Advanced Java", "Cloud Computing", "Software Engineering"});
 
+    // Normalizer rule set kiya ki CGPA ko 9.5 se multiply karo
     auto indianNormalizer = make_shared<IndianCGPANormalizer>();
 
-    // UG aur PG ke liye eligibility check rules
-    auto ugEligibility = make_shared<BasicEligibilityChecker>("HIGH_SCHOOL", 50.0, indianNormalizer); // 12th me 50% chahiye
-    auto pgEligibility = make_shared<BasicEligibilityChecker>("BACHELORS", 60.0, indianNormalizer); // Degree me 60% chahiye
+    // 3. Rules banaye ki UG (Undergrad) aur PG (Postgrad) ko form bharne ke liye kya chahiye
+    auto ugEligibility = make_shared<BasicEligibilityChecker>("HIGH_SCHOOL", 50.0, indianNormalizer); // 12th me 50%
+    auto pgEligibility = make_shared<BasicEligibilityChecker>("BACHELORS", 60.0, indianNormalizer); // Graduation me 60%
 
-    // Programs register karte hain department mein
+    // 4. Final Programs setup kiye aur Department me dal diye
     auto bca = make_shared<Program>("BCA", "UG", bcaCurriculum, ugEligibility);
     auto mca = make_shared<Program>("MCA", "PG", mcaCurriculum, pgEligibility);
     auto mtechCS = make_shared<Program>("M.Tech Computer Science", "PG", mtechCsCurriculum, pgEligibility);
-    auto intMCA = make_shared<Program>("Integrated MCA (BCA + MCA)", "UG", make_shared<Curriculum>(10, 200, vector<string>{"Fundamentals of IT", "AI"}), ugEligibility);
-
+    
     scsitDept->addProgram(bca);
     scsitDept->addProgram(mca);
     scsitDept->addProgram(mtechCS);
-    scsitDept->addProgram(intMCA);
 
-    // Dummy Students banate hain different qualifications ke saath
+    // 5. Dummy Candidates (Students) Banaye
     Student s1("S101", "Alice");
     s1.addQualification(Qualification("High School", 92.5, "DPS", 2023, "HIGH_SCHOOL")); // Sirf 12th pass hai
     
     Student s2("S102", "Bob");
-    s2.addQualification(Qualification("High School", 48.0, "KVS", 2023, "HIGH_SCHOOL")); // Reject hoga due to < 50%
+    s2.addQualification(Qualification("High School", 48.0, "KVS", 2023, "HIGH_SCHOOL")); // Yeh reject hoga kyunki % kam hai (50 se kam)
 
     Student s3("S103", "Charlie");
     s3.addQualification(Qualification("High School", 85.0, "State Board", 2020, "HIGH_SCHOOL"));
-    s3.addQualification(Qualification("BCA", 8.5, "DAVV", 2023, "BACHELORS")); // PG eligible
+    s3.addQualification(Qualification("BCA", 8.5, "DAVV", 2023, "BACHELORS")); // PG ke liye eligible hai (Degree bhi hai)
 
     Student s4("S104", "David");
     s4.addQualification(Qualification("High School", 90.0, "CBSE", 2019, "HIGH_SCHOOL"));
     s4.addQualification(Qualification("B.Tech", 9.2, "IIT", 2023, "BACHELORS"));
-    s4.addQualification(Qualification("GATE", 75.0, "GATE Board", 2023, "GATE", true, 75.0)); // GATE cleared
+    s4.addQualification(Qualification("GATE", 75.0, "GATE Board", 2023, "GATE", true, 75.0)); // Isne GATE clear kiya hai
 
-    // Alag alag branches ke admission processes (seat limit aur merit criteria apply kar rahe hain)
+    // 6. Admission Process (Har program ki seats aur merit criteria allocate kiya)
     AdmissionProcess bcaAdmission(2024, bca, scsitDept, 1, make_shared<StandardMeritCalculator>("HIGH_SCHOOL", indianNormalizer));
     AdmissionProcess mcaAdmission(2024, mca, scsitDept, 1, make_shared<StandardMeritCalculator>("BACHELORS", indianNormalizer));
-    AdmissionProcess mtechCsAdmission(2024, mtechCS, scsitDept, 2, make_shared<GatePreferenceMeritCalculator>(indianNormalizer)); // Isme GATE merit lagti hai
+    // M.Tech me rank banane ka special formula lagega (GatePreferenceMeritCalculator)
+    AdmissionProcess mtechCsAdmission(2024, mtechCS, scsitDept, 2, make_shared<GatePreferenceMeritCalculator>(indianNormalizer));
 
     cout << "\n--- Applying to Programs ---" << endl;
-    // Students ko apply karwana program mein
+    
+    // 7. Bacho ne apply kiya
     bcaAdmission.apply(s1);
-    bcaAdmission.apply(s2); // Yeh print karega ki Bob reject ho gaya
+    bcaAdmission.apply(s2); // Bob yahan reject hoga, error print hoga
     mcaAdmission.apply(s3);
-    mtechCsAdmission.apply(s4);
+    mtechCsAdmission.apply(s4); // David ka GATE score help karega
 
     cout << "\n--- Generating Merit Lists & Admissions ---" << endl;
-    // Selection process generate karna
+    
+    // 8. Result nikalo
     bcaAdmission.generateMeritListAndAdmit();
     bcaAdmission.printAdmittedStudents();
     cout << endl;
