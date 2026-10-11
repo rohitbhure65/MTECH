@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Advanced DBMS — Assignment I: E-R Diagrams</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f7f8fc;
+    --surface: #ffffff;
+    --surface2: #eef1f8;
+    --border: #d0d7e8;
+    --text: #1a1d2e;
+    --muted: #6b728e;
+    --accent1: #2a52be; /* blue — PK */
+    --accent2: #c0392b; /* red — FK */
+    --accent3: #1a7a4a; /* green — relationship */
+    --accent4: #7c3fa0; /* purple — weak entity */
+    --accent5: #c67c00; /* amber — attribute */
+    --mono: 'IBM Plex Mono', monospace;
+    --sans: 'IBM Plex Sans', sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #12131f;
+      --surface: #1c1e30;
+      --surface2: #252843;
+      --border: #353960;
+      --text: #e8eaf4;
+      --muted: #9098ba;
+      --accent1: #5b82ff;
+      --accent2: #e05555;
+      --accent3: #3ecf7e;
+      --accent4: #b07fff;
+      --accent5: #f0a830;
+    }
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    font-size: 15px;
+    line-height: 1.65;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: var(--surface);
+    border-bottom: 2px solid var(--accent1);
+    display: flex; align-items: center; gap: 0;
+    padding: 0 32px;
+    overflow-x: auto;
+  }
+  nav a {
+    font-family: var(--mono); font-size: 12px; font-weight: 600;
+    color: var(--muted); text-decoration: none;
+    padding: 14px 18px; border-bottom: 3px solid transparent;
+    white-space: nowrap; transition: color .2s, border-color .2s;
+  }
+  nav a:hover, nav a.active { color: var(--accent1); border-bottom-color: var(--accent1); }
+  .nav-brand {
+    font-family: var(--mono); font-size: 13px; font-weight: 600;
+    color: var(--text); padding: 14px 18px 14px 0; margin-right: 8px;
+    border-right: 1px solid var(--border);
+  }
+
+  /* ── PAGE ── */
+  .page { max-width: 1080px; margin: 0 auto; padding: 48px 24px 80px; }
+
+  /* ── HERO ── */
+  .hero {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 36px 40px;
+    margin-bottom: 48px;
+  }
+  .hero-label {
+    font-family: var(--mono); font-size: 11px; color: var(--accent1);
+    letter-spacing: .12em; margin-bottom: 10px;
+  }
+  .hero h1 { font-size: 28px; font-weight: 700; line-height: 1.2; margin-bottom: 10px; }
+  .hero p { color: var(--muted); max-width: 620px; }
+  .legend {
+    display: flex; flex-wrap: wrap; gap: 10px 24px;
+    margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border);
+  }
+  .leg { display: flex; align-items: center; gap: 7px; font-size: 13px; }
+  .leg-dot { width: 12px; height: 12px; border-radius: 2px; flex-shrink: 0; }
+
+  /* ── SECTION ── */
+  section { margin-bottom: 64px; }
+  .section-header {
+    display: flex; align-items: baseline; gap: 14px;
+    margin-bottom: 28px; padding-bottom: 12px;
+    border-bottom: 2px solid var(--border);
+  }
+  .section-num {
+    font-family: var(--mono); font-size: 11px; font-weight: 600;
+    color: var(--accent1); background: color-mix(in srgb, var(--accent1) 12%, transparent);
+    padding: 3px 9px; border-radius: 3px;
+  }
+  h2 { font-size: 20px; font-weight: 700; }
+  h3 { font-size: 14px; font-weight: 600; color: var(--muted);
+       text-transform: uppercase; letter-spacing: .06em;
+       margin: 28px 0 14px; font-family: var(--mono); }
+
+  /* ── GRID ── */
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+  @media (max-width: 740px) {
+    .grid2, .grid3 { grid-template-columns: 1fr; }
+  }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 4px; padding: 20px 22px;
+  }
+  .card-title {
+    font-family: var(--mono); font-size: 12px; font-weight: 600;
+    color: var(--muted); margin-bottom: 10px; letter-spacing: .06em;
+  }
+
+  /* ── ER TABLE (entity box) ── */
+  .er-wrap { overflow-x: auto; }
+  .er-table {
+    border-collapse: collapse; font-family: var(--mono); font-size: 13px;
+    min-width: 220px;
+  }
+  .er-entity-header {
+    background: var(--accent1); color: #fff;
+    text-align: center; font-weight: 600; padding: 6px 14px;
+    letter-spacing: .04em;
+  }
+  .er-entity-header.weak { background: var(--accent4); }
+  .er-entity-header.relationship { background: var(--accent3); }
+  .er-table td {
+    border: 1px solid var(--border);
+    padding: 5px 10px;
+    background: var(--surface);
+  }
+  .er-table td:first-child { color: var(--muted); width: 54px; }
+  .er-table td:last-child { width: 60px; text-align: center; }
+  .pk { color: var(--accent1); font-weight: 600; font-size: 11px; }
+  .fk { color: var(--accent2); font-weight: 600; font-size: 11px; }
+  .pkfk { color: var(--accent4); font-weight: 600; font-size: 11px; }
+
+  /* ── SVG DIAGRAMS ── */
+  .svg-container {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 4px; overflow: auto; padding: 16px;
+    text-align: center;
+  }
+  svg text { font-family: var(--mono); }
+
+  /* ── RELATIONSHIP TABLE ── */
+  .rel-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .rel-table th {
+    background: var(--surface2); padding: 8px 12px;
+    text-align: left; font-family: var(--mono); font-size: 11px;
+    font-weight: 600; color: var(--muted); border: 1px solid var(--border);
+    letter-spacing: .04em;
+  }
+  .rel-table td { padding: 7px 12px; border: 1px solid var(--border); vertical-align: top; }
+  .rel-table tr:nth-child(even) td { background: var(--surface2); }
+  .badge {
+    display: inline-block; font-family: var(--mono); font-size: 11px;
+    font-weight: 600; padding: 2px 8px; border-radius: 3px;
+  }
+  .badge-m { background: color-mix(in srgb, var(--accent3) 15%, transparent); color: var(--accent3); }
+  .badge-1 { background: color-mix(in srgb, var(--accent1) 15%, transparent); color: var(--accent1); }
+  .badge-w { background: color-mix(in srgb, var(--accent4) 15%, transparent); color: var(--accent4); }
+
+  /* ── SCHEMA ── */
+  .schema-block {
+    background: var(--surface2); border-left: 3px solid var(--accent1);
+    padding: 14px 18px; border-radius: 0 4px 4px 0;
+    font-family: var(--mono); font-size: 13px; line-height: 1.9;
+    margin-bottom: 8px;
+  }
+  .schema-block .tname { color: var(--accent1); font-weight: 600; }
+  .schema-block .pk-attr { color: var(--accent1); text-decoration: underline; }
+  .schema-block .fk-attr { color: var(--accent2); }
+
+  /* ── WORKFLOW ── */
+  .flow-step {
+    display: flex; gap: 14px; align-items: flex-start;
+    padding: 12px 0; border-bottom: 1px solid var(--border);
+  }
+  .flow-step:last-child { border-bottom: none; }
+  .flow-num {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--accent1); color: #fff;
+    font-family: var(--mono); font-size: 12px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .flow-content strong { display: block; font-size: 14px; margin-bottom: 3px; }
+  .flow-content p { color: var(--muted); font-size: 13px; }
+
+  /* ── USE CASE ── */
+  .uc-list { list-style: none; }
+  .uc-list li {
+    padding: 9px 14px; border-left: 3px solid var(--accent3);
+    background: color-mix(in srgb, var(--accent3) 6%, transparent);
+    margin-bottom: 8px; border-radius: 0 3px 3px 0;
+    font-size: 13px;
+  }
+  .uc-list li strong { color: var(--accent3); }
+
+  /* ── NOTE BOX ── */
+  .note {
+    background: color-mix(in srgb, var(--accent5) 10%, transparent);
+    border-left: 3px solid var(--accent5); padding: 12px 16px;
+    border-radius: 0 4px 4px 0; font-size: 13px; color: var(--muted);
+    margin: 16px 0;
+  }
+  .note strong { color: var(--accent5); }
+
+  /* ── DIVIDER ── */
+  hr { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+
+  /* ── CROW FOOT SVG ── */
+  .cf-diagram { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; overflow: auto; }
+</style>
+</head>
+<body>
+
+<nav>
+  <span class="nav-brand">ADV DBMS / Assign-I</span>
+  <a href="#overview">Overview</a>
+  <a href="#cs1">Case 1: Insurance</a>
+  <a href="#cs2">Case 2: University</a>
+  <a href="#cs3">Case 3: Cricket</a>
+  <a href="#compare">Comparison</a>
+</nav>
+
+<div class="page">
+
+  <!-- HERO -->
+  <div class="hero" id="overview">
+    <div class="hero-label">SCSIT, DAVV · Advanced DBMS · Assignment-I</div>
+    <h1>Entity-Relationship Diagrams</h1>
+    <p>Three case studies modelled with crow's foot notation — entities, relationships, cardinality constraints, weak entities, relational schemas, workflows, and use cases.</p>
+    <div class="legend">
+      <div class="leg"><div class="leg-dot" style="background:var(--accent1)"></div> Entity / Primary Key</div>
+      <div class="leg"><div class="leg-dot" style="background:var(--accent4)"></div> Weak Entity</div>
+      <div class="leg"><div class="leg-dot" style="background:var(--accent3)"></div> Relationship</div>
+      <div class="leg"><div class="leg-dot" style="background:var(--accent2)"></div> Foreign Key</div>
+      <div class="leg"><div class="leg-dot" style="background:var(--accent5)"></div> Assumption / Note</div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════
+       CASE STUDY 1
+  ════════════════════════════════════════════════════════ -->
+  <section id="cs1">
+    <div class="section-header">
+      <span class="section-num">CASE 1</span>
+      <h2>Car Insurance Company</h2>
+    </div>
+
+    <p style="color:var(--muted);margin-bottom:24px;max-width:700px;">
+      A car insurance company tracks its customers, the cars they own, and accident records
+      associated with those cars. The key challenge is that <em>one accident can involve multiple cars</em>,
+      making the Car–Accident relationship many-to-many.
+    </p>
+
+    <!-- Entity Boxes -->
+    <h3>Entities &amp; Attributes</h3>
+    <div class="grid3">
+      <div>
+        <div class="er-wrap">
+          <table class="er-table">
+            <tr><td colspan="3" class="er-entity-header">CUSTOMER</td></tr>
+            <tr><td>string</td><td>driver_id</td><td class="pk">PK</td></tr>
+            <tr><td>string</td><td>name</td><td></td></tr>
+            <tr><td>string</td><td>address</td><td></td></tr>
+          </table>
+        </div>
+      </div>
+      <div>
+        <div class="er-wrap">
+          <table class="er-table">
+            <tr><td colspan="3" class="er-entity-header">CAR</td></tr>
+            <tr><td>string</td><td>license_no</td><td class="pk">PK</td></tr>
+            <tr><td>string</td><td>model</td><td></td></tr>
+            <tr><td>int</td><td>year</td><td></td></tr>
+            <tr><td>string</td><td>driver_id</td><td class="fk">FK</td></tr>
+          </table>
+        </div>
+      </div>
+      <div>
+        <div class="er-wrap">
+          <table class="er-table">
+            <tr><td colspan="3" class="er-entity-header">ACCIDENT</td></tr>
+            <tr><td>string</td><td>report_no</td><td class="pk">PK</td></tr>
+            <tr><td>date</td><td>acc_date</td><td></td></tr>
+            <tr><td>string</td><td>location</td><td></td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:16px">
+      <div class="er-wrap" style="max-width:300px">
+        <table class="er-table">
+          <tr><td colspan="3" class="er-entity-header relationship">PARTICIPATED (junction)</td></tr>
+          <tr><td>string</td><td>license_no</td><td class="pkfk">PK,FK</td></tr>
+          <tr><td>string</td><td>report_no</td><td class="pkfk">PK,FK</td></tr>
+          <tr><td>int</td><td>damage_amount</td><td></td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- ER Diagram SVG -->
+    <h3>E-R Diagram (Crow's Foot)</h3>
+    <div class="svg-container">
+      <svg viewBox="0 0 820 340" width="820" style="max-width:100%">
+        <defs>
+          <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+            <path d="M0,0 L10,5 L0,10 Z" fill="#6b728e"/>
+          </marker>
+        </defs>
+        <!-- CUSTOMER box -->
+        <rect x="20" y="120" width="160" height="100" rx="3" fill="var(--surface)" stroke="var(--accent1)" stroke-width="2"/>
+        <rect x="20" y="120" width="160" height="28" rx="3" fill="var(--accent1)"/>
+        <rect x="20" y="145" width="160" height="3" fill="var(--accent1)"/>
+        <text x="100" y="140" text-anchor="middle" fill="white" font-size="13" font-weight="700">CUSTOMER</text>
+        <text x="32" y="162" fill="var(--muted)" font-size="11">string</text>
+        <text x="80" y="162" fill="var(--text)" font-size="12">driver_id</text>
+        <text x="162" y="162" text-anchor="end" fill="var(--accent1)" font-size="10" font-weight="700">PK</text>
+        <text x="32" y="178" fill="var(--muted)" font-size="11">string</text>
+        <text x="80" y="178" fill="var(--text)" font-size="12">name</text>
+        <text x="32" y="194" fill="var(--muted)" font-size="11">string</text>
+        <text x="80" y="194" fill="var(--text)" font-size="12">address</text>
+
+        <!-- CAR box -->
+        <rect x="290" y="90" width="160" height="120" rx="3" fill="var(--surface)" stroke="var(--accent1)" stroke-width="2"/>
+        <rect x="290" y="90" width="160" height="28" rx="3" fill="var(--accent1)"/>
+        <rect x="290" y="115" width="160" height="3" fill="var(--accent1)"/>
+        <text x="370" y="110" text-anchor="middle" fill="white" font-size="13" font-weight="700">CAR</text>
+        <text x="302" y="132" fill="var(--muted)" font-size="11">string</text>
+        <text x="350" y="132" fill="var(--text)" font-size="12">license_no</text>
+        <text x="442" y="132" text-anchor="end" fill="var(--accent1)" font-size="10" font-weight="700">PK</text>
+        <text x="302" y="148" fill="var(--muted)" font-size="11">string</text>
+        <text x="350" y="148" fill="var(--text)" font-size="12">model</text>
+        <text x="302" y="164" fill="var(--muted)" font-size="11">int</text>
+        <text x="350" y="164" fill="var(--text)" font-size="12">year</text>
+        <text x="302" y="180" fill="var(--muted)" font-size="11">string</text>
+        <text x="350" y="180" fill="var(--text)" font-size="12">driver_id</text>
+        <text x="442" y="180" text-anchor="end" fill="var(--accent2)" font-size="10" font-weight="700">FK</text>
+
+        <!-- OWNS line: CUSTOMER ||——|{ CAR -->
+        <!-- exactly-one on CUSTOMER side, one-or-many on CAR side -->
+        <line x1="180" y1="170" x2="290" y2="150" stroke="var(--border)" stroke-width="1.5"/>
+        <!-- crow: CUSTOMER side = exactly one (||) -->
+        <line x1="185" y1="167" x2="190" y2="163" stroke="var(--muted)" stroke-width="1.8"/>
+        <line x1="188" y1="170" x2="193" y2="166" stroke="var(--muted)" stroke-width="1.8"/>
+        <!-- crow: CAR side = one or many (|<) -->
+        <line x1="282" y1="154" x2="287" y2="150" stroke="var(--muted)" stroke-width="1.8"/>
+        <line x1="278" y1="156" x2="283" y2="152" stroke="var(--muted)" stroke-width="1.8"/>
+        <line x1="281" y1="151" x2="275" y2="157" stroke="var(--muted)" stroke-width="1.8"/>
+        <line x1="278" y1="147" x2="272" y2="153" stroke="var(--muted)" stroke-width="1.8"/>
+        <text x="228" y="150" text-anchor="middle" fill="var(--accent3)" font-size="11" font-weight="600">owns</text>
+        <text x="192" y="185" fill="var(--muted)" font-size="10">1</text>
+        <text x="266" y="148" fill="var(--muted)" font-size="10">N</text>
+
+        <!-- PARTICIPATED box -->
+        <rect x="530" y="60" width="190" height="100" rx="3" fill="var(--surface)" stroke="var(--accent3)" stroke-width="2"/>
+        <rect x="530" y="60" width="190" height="28" rx="3" fill="var(--accent3)"/>
+        <rect x="530" y="85" width="190" height="3" fill="var(--accent3)"/>
+        <text x="625" y="80" text-anchor="middle" fill="white" font-size="12" font-weight="700">PARTICIPATED</text>
+        <text x="542" y="102" fill="var(--muted)" font-size="11">string</text>
+        <text x="590" y="102" fill="var(--text)" font-size="12">license_no</text>
+        <text x="712" y="102" text-anchor="end" fill="var(--accent4)" font-size="10" font-weight="700">PK,FK</text>
+        <text x="542" y="118" fill="var(--muted)" font-size="11">string</text>
+        <text x="590" y="118" fill="var(--text)" font-size="12">report_no</text>
+        <text x="712" y="118" text-anchor="end" fill="var(--accent4)" font-size="10" font-weight="700">PK,FK</text>
+        <text x="542" y="134" fill="var(--muted)" font-size="11">int</text>
+        <text x="590" y="134" fill="var(--text)" font-size="12">damage_amount</text>
+
+        <!-- CAR to PARTICIPATED -->
+        <line x1="450" y1="120" x2="530" y2="100" stroke="var(--border)" stroke-width="1.5"/>
+        <text x="484" y="100" text-anchor="middle" fill="var(--accent3)" font-size="11" font-weight="600">recorded_in</text>
+        <text x="456" y="118" fill="var(--muted)" font-size="10">0..N</text>
+        <text x="518" y="98" fill="var(--muted)" font-size="10">1</text>
+
+        <!-- ACCIDENT box -->
+        <rect x="580" y="230" width="160" height="90" rx="3" fill="var(--surface)" stroke="var(--accent1)" stroke-width="2"/>
+        <rect x="580" y="230" width="160" height="28" rx="3" fill="var(--accent1)"/>
+        <rect x="580" y="255" width="160" height="3" fill="var(--accent1)"/>
+        <text x="660" y="250" text-anchor="middle" fill="white" font-size="13" font-weight="700">ACCIDENT</text>
+        <text x="592" y="272" fill="var(--muted)" font-size="11">string</text>
+        <text x="640" y="272" fill="var(--text)" font-size="12">report_no</text>
+        <text x="732" y="272" text-anchor="end" fill="var(--accent1)" font-size="10" font-weight="700">PK</text>
+        <text x="592" y="288" fill="var(--muted)" font-size="11">date</text>
+        <text x="640" y="288" fill="var(--text)" font-size="12">acc_date</text>
+        <text x="592" y="304" fill="var(--muted)" font-size="11">string</text>
+        <text x="640" y="304" fill="var(--text)" font-size="12">location</text>
+
+        <!-- PARTICIPATED to ACCIDENT -->
+        <line x1="660" y1="160" x2="660" y2="230" stroke="var(--border)" stroke-width="1.5"/>
+        <text x="672" y="200" fill="var(--accent3)" font-size="11" font-weight="600">involves</text>
+        <text x="645" y="168" fill="var(--muted)" font-size="10">1</text>
+        <text x="645" y="226" fill="var(--muted)" font-size="10">1..N</text>
+      </svg>
+    </div>
+
+    <!-- Relationships table -->
+    <h3>Relationships &amp; Cardinality</h3>
+    <div style="overflow-x:auto">
+      <table class="rel-table">
+        <tr>
+          <th>Relationship</th><th>Between</th><th>Cardinality</th><th>Participation</th><th>Attribute</th>
+        </tr>
+        <tr>
+          <td><strong>owns</strong></td>
+          <td>CUSTOMER → CAR</td>
+          <td><span class="badge badge-1">1 : N</span></td>
+          <td>Customer: <em>total</em> (must own ≥1 car)<br>Car: <em>total</em> (every car has an owner)</td>
+          <td>—</td>
+        </tr>
+        <tr>
+          <td><strong>participated</strong></td>
+          <td>CAR ↔ ACCIDENT</td>
+          <td><span class="badge badge-m">M : N</span></td>
+          <td>Car: <em>partial</em> (may have no accident)<br>Accident: <em>total</em> (at least one car)</td>
+          <td><code>damage_amount</code></td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- Workflow -->
+    <h3>System Workflow</h3>
+    <div class="card">
+      <div class="flow-step">
+        <div class="flow-num">1</div>
+        <div class="flow-content">
+          <strong>Customer Registration</strong>
+          <p>A new driver is registered with driver_id, name and address. This creates a row in the CUSTOMER table.</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">2</div>
+        <div class="flow-content">
+          <strong>Car Registration</strong>
+          <p>Each car is linked to a customer via driver_id (FK). A customer may register multiple cars; each car belongs to exactly one customer.</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">3</div>
+        <div class="flow-content">
+          <strong>Accident Reporting</strong>
+          <p>When an accident occurs, a new ACCIDENT row is created with a unique report_no, date and location.</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">4</div>
+        <div class="flow-content">
+          <strong>Participation Logging</strong>
+          <p>Each car involved in the accident gets a row in PARTICIPATED with its own damage_amount. Multiple cars can share one report_no.</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">5</div>
+        <div class="flow-content">
+          <strong>Claim Processing</strong>
+          <p>Insurance can JOIN CUSTOMER → CAR → PARTICIPATED → ACCIDENT to compute payouts per driver per incident.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Use cases -->
+    <h3>Key Use Cases (Sample Queries)</h3>
+    <ul class="uc-list">
+      <li><strong>UC-1:</strong> List all cars owned by a specific customer and their total damage across all accidents.</li>
+      <li><strong>UC-2:</strong> Find all accidents that occurred at a specific location in a given year.</li>
+      <li><strong>UC-3:</strong> Identify cars with zero accident records (partial participation check).</li>
+      <li><strong>UC-4:</strong> Find customers whose cars were involved in more than two accidents.</li>
+      <li><strong>UC-5:</strong> Compute total damage_amount per accident (sum across all participating cars).</li>
+    </ul>
+
+    <!-- Schema -->
+    <h3>Relational Schema</h3>
+    <div class="schema-block">
+      <span class="tname">CUSTOMER</span>(<span class="pk-attr">driver_id</span>, name, address)
+    </div>
+    <div class="schema-block">
+      <span class="tname">CAR</span>(<span class="pk-attr">license_no</span>, model, year, <span class="fk-attr">driver_id</span>)
+    </div>
+    <div class="schema-block">
+      <span class="tname">ACCIDENT</span>(<span class="pk-attr">report_no</span>, acc_date, location)
+    </div>
+    <div class="schema-block">
+      <span class="tname">PARTICIPATED</span>(<span class="pk-attr">license_no</span>, <span class="pk-attr">report_no</span>, damage_amount)
+      &nbsp;&nbsp;<span style="color:var(--muted);font-size:12px">← resolves M:N</span>
+    </div>
+    <div class="note">
+      <strong>Why damage_amount is in PARTICIPATED, not ACCIDENT:</strong>
+      Each car in the same accident may sustain a different amount of damage. Storing it in ACCIDENT would mean one fixed value for all cars — incorrect. Storing it in CAR would mix it with the car's own data. The (car, accident) pair in PARTICIPATED is the correct granularity.
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════════════════════
+       CASE STUDY 2
+  ════════════════════════════════════════════════════════ -->
+  <section id="cs2">
+    <div class="section-header">
+      <span class="section-num">CASE 2</span>
+      <h2>University Registrar's Office</h2>
+    </div>
+
+    <p style="color:var(--muted);margin-bottom:24px;max-width:700px;">
+      The university system separates a <em>Course</em> (general subject) from a <em>Course Offering</em>
+      (a specific semester-run). This distinction is the central modelling decision. Course offerings are
+      weak entities — they depend on the course for identification.
+    </p>
+
+    <!-- Entity boxes -->
+    <h3>Entities &amp; Attributes</h3>
+    <div class="grid2" style="gap:16px">
+      <div class="er-wrap">
+        <table class="er-table">
+          <tr><td colspan="3" class="er-entity-header">COURSE</td></tr>
+          <tr><td>string</td><td>course_no</td><td class="pk">PK</td></tr>
+          <tr><td>string</td><td>title</td><td></td></tr>
+          <tr><td>int</td><td>credits</td><td></td></tr>
+          <tr><td>text</td><td>syllabus</td><td></td></tr>
+        </table>
+      </div>
+      <div class="er-wrap">
+        <table class="er-table">
+          <tr><td colspan="3" class="er-entity-header weak">COURSE_OFFERING (weak)</td></tr>
+          <tr><td>string</td><td>course_no</td><td class="pkfk">PK,FK</td></tr>
+          <tr><td>int</td><td>year</td><td class="pk">PK</td></tr>
+          <tr><td>string</td><td>semester</td><td class="pk">PK</td></tr>
+          <tr><td>int</td><td>section_no</td><td class="pk">PK</td></tr>
+          <tr><td>string</td><td>timings</td><td></td></tr>
+          <tr><td>string</td><td>classroom</td><td></td></tr>
+        </table>
+      </div>
+      <div class="er-wrap">
+        <table class="er-table">
+          <tr><td colspan="3" class="er-entity-header">STUDENT</td></tr>
+          <tr><td>string</td><td>student_id</td><td class="pk">PK</td></tr>
+          <tr><td>string</td><td>name</td><td></td></tr>
+          <tr><td>string</td><td>program</td><td></td></tr>
+        </table>
+      </div>
+      <div class="er-wrap">
+        <table class="er-table">
+          <tr><td colspan="3" class="er-entity-header">INSTRUCTOR</td></tr>
+          <tr><td>string</td><td>instructor_id</td><td class="pk">PK</td></tr>
+          <tr><td>string</td><td>name</td><td></td></tr>
+          <tr><td>string</td><td>department</td><td></td></tr>
+          <tr><td>string</td><td>title</td><td></td></tr>
+        </table>
+      </div>
+    </div>
+    <div class="grid2" style="gap:16px;margin-top:16px">
+      <div class="er-wrap">
+        <table class="er-table">
+          <tr><td colspan="3" class="er-entity-header relationship">ENROLMENT (junction)</td></tr>
+          <tr><td>string</td><td>student_id</td><td class="pkfk">PK,FK</td></tr>
+          <tr><td>string</td><td>course_no</td><td class="pkfk">PK,FK</td></tr>
+          <tr><td>int</td><td>year</td><td class="pkfk">PK,FK</td></tr>
+          <tr><td>string</td><td>semester</td><td class="pkfk">PK,FK</td></tr>
+          <tr><td>int</td><td>section_no</td><td class="pkfk">PK,FK</td></tr>
+          <tr><td>string</td><td>grade</td><td></td></tr>
+        </table>
+      </div>
+      <div class="er-wrap">
+        <table class="er-table">
+          <tr><td colspan="3" class="er-entity-header relationship">PREREQUISITE (self-join)</td></tr>
+          <tr><td>string</td><td>course_no</td><td class="pkfk">PK,FK</td></tr>
+          <tr><td>string</td><td>prereq_course_no</td><td class="pkfk">PK,FK</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- ER Diagram -->
+    <h3>E-R Diagram (Crow's Foot)</h3>
+    <div class="svg-container">
+      <svg viewBox="0 0 900 520" width="900" style="max-width:100%">
+        <!-- COURSE -->
+        <rect x="30" y="180" width="160" height="110" rx="3" fill="var(--surface)" stroke="var(--accent1)" stroke-width="2"/>
+        <rect x="30" y="180" width="160" height="28" rx="3" fill="var(--accent1)"/>
+        <text x="110" y="200" text-anchor="middle" fill="white" font-size="13" font-weight="700">COURSE</text>
+        <text x="42" y="222" fill="var(--muted)" font-size="11">string</text><text x="88" y="222" fill="var(--text)" font-size="12">course_no</text><text x="182" y="222" text-anchor="end" fill="var(--accent1)" font-size="10" font-weight="700">PK</text>
+        <text x="42" y="238" fill="var(--muted)" font-size="11">string</text><text x="88" y="238" fill="var(--text)" font-size="12">title</text>
+        <text x="42" y="254" fill="var(--muted)" font-size="11">int</text><text x="88" y="254" fill="var(--text)" font-size="12">credits</text>
+        <text x="42" y="270" fill="var(--muted)" font-size="11">text</text><text x="88" y="270" fill="var(--text)" font-size="12">syllabus</text>
+
+        <!-- PREREQUISITE self loop -->
+        <path d="M 30 220 Q 0 160 30 240" fill="none" stroke="var(--border)" stroke-width="1.5"/>
+        <text x="2" y="198" fill="var(--accent3)" font-size="10" font-weight="600">has_prereq</text>
+        <text x="2" y="210" fill="var(--muted)" font-size="9">M:N recursive</text>
+
+        <!-- COURSE_OFFERING (weak entity double border) -->
+        <rect x="340" y="160" width="180" height="150" rx="3" fill="var(--surface)" stroke="var(--accent4)" stroke-width="3"/>
+        <rect x="347" y="167" width="166" height="136" rx="2" fill="none" stroke="var(--accent4)" stroke-width="1"/>
+        <rect x="340" y="160" width="180" height="28" rx="3" fill="var(--accent4)"/>
+        <text x="430" y="178" text-anchor="middle" fill="white" font-size="11" font-weight="700">COURSE_OFFERING</text>
+        <text x="352" y="200" fill="var(--muted)" font-size="11">string</text><text x="398" y="200" fill="var(--text)" font-size="12">course_no</text><text x="512" y="200" text-anchor="end" fill="var(--accent4)" font-size="10" font-weight="700">PK,FK</text>
+        <text x="352" y="216" fill="var(--muted)" font-size="11">int</text><text x="398" y="216" fill="var(--text)" font-size="12">year</text><text x="512" y="216" text-anchor="end" fill="var(--accent1)" font-size="10" font-weight="700">PK</text>
+        <text x="352" y="232" fill="var(--muted)" font-size="11">string</text><text x="398" y="232" fill="var(--text)" font-size="12">semester</text><text x="512" y="232" text-anchor="end" fill="var(--accent1)" font-size="10" font-weight="700">PK</text>
+        <text x="352" y="248" fill="var(--muted)" font-size="11">int</text><text x="398" y="248" fill="var(--text)" font-size="12">section_no</text><text x="512" y="248" text-anchor="end" fill="var(--accent1)" font-size="10" font-weight="700">PK</text>
+        <text x="352" y="264" fill="var(--muted)" font-size="11">string</text><text x="398" y="264" fill="var(--text)" font-size="12">timings</text>
+        <text x="352" y="280" fill="var(--muted)" font-size="11">string</text><text x="398" y="280" fill="var(--text)" font-size="12">classroom</text>
+
+        <!-- COURSE — is_offered_as — COURSE_OFFERING -->
+        <line x1="190" y1="220" x2="340" y2="220" stroke="var(--border)" stroke-width="1.5"/>
+        <text x="258" y="212" text-anchor="middle" fill="var(--accent3)" font-size="11" font-weight="600">is_offered_as</text>
+        <text x="198" y="232" fill="var(--muted)" font-size="10">1</text>
+        <text x="328" y="232" fill="var(--muted)" font-size="10">N</text>
+
+        <!-- INSTRUCTOR -->
+        <rect x="650" y="30" width="180" height="110" rx="3" fill="var(--surface)" stroke="var(--accent1)" stroke-width="2"/>
+        <rect x="650" y="30" width="180" height="28" rx="3" fill="var(--accent1)"/>
+        <text x="740" y="50" text-anchor="middle" fill="white" font-size="13" font-weight="700">INSTRUCTOR</text>
+        <text x="662" y="72" fill="var(--muted)" font-size="11">string</text><text x="708" y="72" fill="var(--text)" font-size="12">instructor_id</text><text x="822" y="72" text-anchor="end" fill="var(--accent1)" font-size="10" font-weight="700">PK</text>
+        <text x="662" y="88" fill="var(--muted)" font-size="11">string</text><text x="708" y="88" fill="var(--text)" font-size="12">name</text>
+        <text x="662" y="104" fill="var(--muted)" font-size="11">string</text><text x="708" y="104" fill="var(--text)" font-size="12">department</text>
+        <text x="662" y="120" fill="var(--muted)" font-size="11">string</text><text x="708" y="120" fill="var(--text)" font-size="12">title</text>
+
+        <!-- INSTRUCTOR — teaches — COURSE_OFFERING -->
+        <line x1="740" y1="140" x2="520" y2="200" stroke="var(--border)" stroke-width="1.5"/>
+        <text x="640" y="162" text-anchor="middle" fill="var(--accent3)" font-size="11" font-weight="600">teaches (M:N)</text>
+
+        <!-- STUDENT -->
+        <rect x="340" y="400" width="160" height="90" rx="3" fill="var(--surface)" stroke="var(--accent1)" stroke-width="2"/>
+        <rect x="340" y="400" width="160" height="28" rx="3" fill="var(--accent1)"/>
+        <text x="420" y="420" text-anchor="middle" fill="white" font-size="13" font-weight="700">STUDENT</text>
+        <text x="352" y="442" fill="var(--muted)" font-size="11">string</text><text x="398" y="442" fill="var(--text)" font-size="12">student_id</text><text x="492" y="442" text-anchor="end" fill="var(--accent1)" font-size="10" font-weight="700">PK</text>
+        <text x="352" y="458" fill="var(--muted)" font-size="11">string</text><text x="398" y="458" fill="var(--text)" font-size="12">name</text>
+        <text x="352" y="474" fill="var(--muted)" font-size="11">string</text><text x="398" y="474" fill="var(--text)" font-size="12">program</text>
+
+        <!-- STUDENT — enrols — COURSE_OFFERING -->
+        <line x1="420" y1="400" x2="430" y2="310" stroke="var(--border)" stroke-width="1.5"/>
+        <text x="444" y="360" fill="var(--accent3)" font-size="11" font-weight="600">enrols (M:N)</text>
+
+        <!-- ENROLMENT junction -->
+        <rect x="620" y="380" width="180" height="130" rx="3" fill="var(--surface)" stroke="var(--accent3)" stroke-width="2"/>
+        <rect x="620" y="380" width="180" height="28" rx="3" fill="var(--accent3)"/>
+        <text x="710" y="400" text-anchor="middle" fill="white" font-size="12" font-weight="700">ENROLMENT</text>
+        <text x="632" y="422" fill="var(--muted)" font-size="11">string</text><text x="678" y="422" fill="var(--text)" font-size="12">student_id</text><text x="792" y="422" text-anchor="end" fill="var(--accent4)" font-size="10" font-weight="700">PK,FK</text>
+        <text x="632" y="438" fill="var(--muted)" font-size="11">string</text><text x="678" y="438" fill="var(--text)" font-size="12">course_no</text><text x="792" y="438" text-anchor="end" fill="var(--accent4)" font-size="10" font-weight="700">PK,FK</text>
+        <text x="632" y="454" fill="var(--muted)" font-size="11">int</text><text x="678" y="454" fill="var(--text)" font-size="12">year</text><text x="792" y="454" text-anchor="end" fill="var(--accent4)" font-size="10" font-weight="700">PK,FK</text>
+        <text x="632" y="470" fill="var(--muted)" font-size="11">string</text><text x="678" y="470" fill="var(--text)" font-size="12">semester</text><text x="792" y="470" text-anchor="end" fill="var(--accent4)" font-size="10" font-weight="700">PK,FK</text>
+        <text x="632" y="486" fill="var(--muted)" font-size="11">int</text><text x="678" y="486" fill="var(--text)" font-size="12">section_no</text><text x="792" y="486" text-anchor="end" fill="var(--accent4)" font-size="10" font-weight="700">PK,FK</text>
+        <text x="632" y="502" fill="var(--muted)" font-size="11">string</text><text x="678" y="502" fill="var(--text)" font-size="12">grade</text>
+
+        <!-- ENROLMENT connects -->
+        <line x1="620" y1="440" x2="500" y2="310" stroke="var(--border)" stroke-width="1.2" stroke-dasharray="4,3"/>
+        <line x1="620" y1="430" x2="500" y2="430" stroke="var(--border)" stroke-width="1.2" stroke-dasharray="4,3"/>
+        <line x1="620" y1="430" x2="500" y2="440" stroke="var(--border)" stroke-width="1.2" stroke-dasharray="4,3"/>
+      </svg>
+    </div>
+
+    <div class="note">
+      <strong>Weak Entity — Double border on COURSE_OFFERING:</strong>
+      An offering cannot be uniquely identified by (year, semester, section_no) alone. The same section number may exist in two different courses. The full key is: <code>course_no + year + semester + section_no</code>. This is why course_no is both PK and FK in COURSE_OFFERING.
+    </div>
+
+    <!-- Relationships -->
+    <h3>Relationships &amp; Cardinality</h3>
+    <div style="overflow-x:auto">
+      <table class="rel-table">
+        <tr><th>Relationship</th><th>Between</th><th>Cardinality</th><th>Participation</th><th>Notes</th></tr>
+        <tr>
+          <td><strong>has_prerequisite</strong></td>
+          <td>COURSE ↔ COURSE (recursive)</td>
+          <td><span class="badge badge-m">M : N</span></td>
+          <td>Partial on both sides</td>
+          <td>A course may have zero prerequisites</td>
+        </tr>
+        <tr>
+          <td><strong>is_offered_as</strong></td>
+          <td>COURSE → COURSE_OFFERING</td>
+          <td><span class="badge badge-1">1 : N</span></td>
+          <td>Course: partial. Offering: total</td>
+          <td>Identifying (double line); course may not be offered yet</td>
+        </tr>
+        <tr>
+          <td><strong>teaches</strong></td>
+          <td>INSTRUCTOR ↔ OFFERING</td>
+          <td><span class="badge badge-m">M : N</span></td>
+          <td>Offering: total. Instructor: partial</td>
+          <td>"instructor(s)" in problem → multiple instructors per offering</td>
+        </tr>
+        <tr>
+          <td><strong>enrols</strong></td>
+          <td>STUDENT ↔ OFFERING</td>
+          <td><span class="badge badge-m">M : N</span></td>
+          <td>Both: partial</td>
+          <td>Resolved via ENROLMENT; grade can be NULL until awarded</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- Workflow -->
+    <h3>System Workflow</h3>
+    <div class="card">
+      <div class="flow-step"><div class="flow-num">1</div><div class="flow-content"><strong>Course Catalogue Creation</strong><p>Admin adds courses with number, title, credits, syllabus. Prerequisites are linked via PREREQUISITE table.</p></div></div>
+      <div class="flow-step"><div class="flow-num">2</div><div class="flow-content"><strong>Semester Planning</strong><p>Before each semester, offerings are created (year, semester, section) and assigned instructors via TEACHES.</p></div></div>
+      <div class="flow-step"><div class="flow-num">3</div><div class="flow-content"><strong>Student Registration</strong><p>Students are registered in the system with student_id, name, program.</p></div></div>
+      <div class="flow-step"><div class="flow-num">4</div><div class="flow-content"><strong>Enrolment</strong><p>A student selects a specific offering. A row is inserted into ENROLMENT linking student_id to the full offering key. grade is NULL initially.</p></div></div>
+      <div class="flow-step"><div class="flow-num">5</div><div class="flow-content"><strong>Grade Entry</strong><p>After evaluation, instructor updates ENROLMENT.grade for each student in their offering.</p></div></div>
+      <div class="flow-step"><div class="flow-num">6</div><div class="flow-content"><strong>Transcript Generation</strong><p>Registrar JOINs ENROLMENT → COURSE_OFFERING → COURSE to produce student transcripts with course titles, credits, and grades.</p></div></div>
+    </div>
+
+    <h3>Key Use Cases</h3>
+    <ul class="uc-list">
+      <li><strong>UC-1:</strong> List all offerings of a given course across all semesters with instructor names.</li>
+      <li><strong>UC-2:</strong> Find students enrolled in a specific section and their grades.</li>
+      <li><strong>UC-3:</strong> Check whether a student has completed prerequisites before allowing enrolment.</li>
+      <li><strong>UC-4:</strong> Compute CGPA by joining ENROLMENT with COURSE for credit-weighted grades.</li>
+      <li><strong>UC-5:</strong> List all courses taught by a specific instructor across years.</li>
+      <li><strong>UC-6:</strong> Find which courses have never been offered (outer join between COURSE and COURSE_OFFERING).</li>
+    </ul>
+
+    <!-- Schema -->
+    <h3>Relational Schema</h3>
+    <div class="schema-block"><span class="tname">COURSE</span>(<span class="pk-attr">course_no</span>, title, credits, syllabus)</div>
+    <div class="schema-block"><span class="tname">PREREQUISITE</span>(<span class="pk-attr">course_no</span>, <span class="pk-attr">prereq_course_no</span>)</div>
+    <div class="schema-block"><span class="tname">COURSE_OFFERING</span>(<span class="pk-attr">course_no</span>, <span class="pk-attr">year</span>, <span class="pk-attr">semester</span>, <span class="pk-attr">section_no</span>, timings, classroom)</div>
+    <div class="schema-block"><span class="tname">TEACHES</span>(<span class="pk-attr">instructor_id</span>, <span class="pk-attr">course_no</span>, <span class="pk-attr">year</span>, <span class="pk-attr">semester</span>, <span class="pk-attr">section_no</span>)</div>
+    <div class="schema-block"><span class="tname">STUDENT</span>(<span class="pk-attr">student_id</span>, name, program)</div>
+    <div class="schema-block"><span class="tname">INSTRUCTOR</span>(<span class="pk-attr">instructor_id</span>, name, department, title)</div>
+    <div class="schema-block"><span class="tname">ENROLMENT</span>(<span class="pk-attr">student_id</span>, <span class="pk-attr">course_no</span>, <span class="pk-attr">year</span>, <span class="pk-attr">semester</span>, <span class="pk-attr">section_no</span>, grade)</div>
+  </section>
+
+  <!-- ════════════════════════════════════════════════════════
+       CASE STUDY 3
+  ════════════════════════════════════════════════════════ -->
+  <section id="cs3">
+    <div class="section-header">
+      <span class="section-num">CASE 3</span>
+      <h2>SCS Cricket League (SCL)</h2>
+    </div>
+
+    <p style="color:var(--muted);margin-bottom:24px;max-width:700px;">
+      A cricket league database with teams, players, games and injury records.
+      Key design decisions: captain as a recursive player reference (not a separate entity),
+      two separate FK roles for games (host vs guest), and INJURY_RECORD as a weak entity
+      dependent on PLAYER.
+    </p>
+
+    <!-- Entity Boxes -->
+    <h3>Entities &amp; Attributes</h3>
+    <div class="grid2" style="gap:16px">
+      <div class="er-wrap">
+        <table class="er-table">
+          <tr><td colspan="3" class="er-entity-header">TEAM</td></tr>
+          <tr><td>string</td><td>team_name</td><td class="pk">PK</td></tr>
+          <tr><td>string</td><td>city</td><td></td></tr>
+          <tr><td>string</td><td>coach</td><td></td></tr>
+          <tr><td>string</td><td>captain_id</td><td class="fk">FK</td></tr>
+        </table>
+      </div>
+      <div class="er-wrap">
+        <table class="er-table">
+          <tr><td colspan="3" class="er-entity-header">PLAYER</td></tr>
+          <tr><td>string</td><td>player_id</td><td class="pk">PK</td></tr>
+          <tr><td>string</td><td>name</td><td></td></tr>
+          <tr><td>string</td><td>position</td><td></td></tr>
+          <tr><td>string</td><td>skill_level</td><td></td></tr>
+          <tr><td>string</td><td>team_name</td><td class="fk">FK</td></tr>
+        </table>
+      </div>
+      <div class="er-wrap">
+        <table class="er-table">
+          <tr><td colspan="3" class="er-entity-header">GAME</td></tr>
+          <tr><td>string</td><td>game_id</td><td class="pk">PK</td></tr>
+          <tr><td>date</td><td>game_date</td><td></td></tr>
+          <tr><td>string</td><td>score</td><td></td></tr>
+          <tr><td>string</td><td>host_team</td><td class="fk">FK</td></tr>
+          <tr><td>string</td><td>guest_team</td><td class="fk">FK</td></tr>
+        </table>
+      </div>
+      <div class="er-wrap">
+        <table class="er-table">
+          <tr><td colspan="3" class="er-entity-header weak">INJURY_RECORD (weak)</td></tr>
+          <tr><td>string</td><td>player_id</td><td class="pkfk">PK,FK</td></tr>
+          <tr><td>date</td><td>injury_date</td><td class="pk">PK</td></tr>
+          <tr><td>string</td><td>description</td><td></td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- ER Diagram -->
+    <h3>E-R Diagram (Crow's Foot)</h3>
+    <div class="svg-container">
+      <svg viewBox="0 0 860 460" width="860" style="max-width:100%">
+        <!-- TEAM -->
+        <rect x="320" y="30" width="170" height="110" rx="3" fill="var(--surface)" stroke="var(--accent1)" stroke-width="2"/>
+        <rect x="320" y="30" width="170" height="28" rx="3" fill="var(--accent1)"/>
+        <text x="405" y="50" text-anchor="middle" fill="white" font-size="13" font-weight="700">TEAM</text>
+        <text x="332" y="72" fill="var(--muted)" font-size="11">string</text><text x="378" y="72" fill="var(--text)" font-size="12">team_name</text><text x="482" y="72" text-anchor="end" fill="var(--accent1)" font-size="10" font-weight="700">PK</text>
+        <text x="332" y="88" fill="var(--muted)" font-size="11">string</text><text x="378" y="88" fill="var(--text)" font-size="12">city</text>
+        <text x="332" y="104" fill="var(--muted)" font-size="11">string</text><text x="378" y="104" fill="var(--text)" font-size="12">coach</text>
+        <text x="332" y="120" fill="var(--muted)" font-size="11">string</text><text x="378" y="120" fill="var(--text)" font-size="12">captain_id</text><text x="482" y="120" text-anchor="end" fill="var(--accent2)" font-size="10" font-weight="700">FK</text>
+
+        <!-- PLAYER -->
+        <rect x="60" y="180" width="180" height="130" rx="3" fill="var(--surface)" stroke="var(--accent1)" stroke-width="2"/>
+        <rect x="60" y="180" width="180" height="28" rx="3" fill="var(--accent1)"/>
+        <text x="150" y="200" text-anchor="middle" fill="white" font-size="13" font-weight="700">PLAYER</text>
+        <text x="72" y="222" fill="var(--muted)" font-size="11">string</text><text x="118" y="222" fill="var(--text)" font-size="12">player_id</text><text x="232" y="222" text-anchor="end" fill="var(--accent1)" font-size="10" font-weight="700">PK</text>
+        <text x="72" y="238" fill="var(--muted)" font-size="11">string</text><text x="118" y="238" fill="var(--text)" font-size="12">name</text>
+        <text x="72" y="254" fill="var(--muted)" font-size="11">string</text><text x="118" y="254" fill="var(--text)" font-size="12">position</text>
+        <text x="72" y="270" fill="var(--muted)" font-size="11">string</text><text x="118" y="270" fill="var(--text)" font-size="12">skill_level</text>
+        <text x="72" y="286" fill="var(--muted)" font-size="11">string</text><text x="118" y="286" fill="var(--text)" font-size="12">team_name</text><text x="232" y="286" text-anchor="end" fill="var(--accent2)" font-size="10" font-weight="700">FK</text>
+
+        <!-- TEAM — has — PLAYER (1:N) -->
+        <line x1="320" y1="100" x2="240" y2="230" stroke="var(--border)" stroke-width="1.5"/>
+        <text x="264" y="158" text-anchor="middle" fill="var(--accent3)" font-size="11" font-weight="600">has</text>
+        <text x="310" y="110" fill="var(--muted)" font-size="10">1</text>
+        <text x="243" y="228" fill="var(--muted)" font-size="10">N</text>
+
+        <!-- TEAM — captained_by — PLAYER (1:1) -->
+        <line x1="320" y1="118" x2="240" y2="220" stroke="var(--muted)" stroke-width="1.2" stroke-dasharray="5,3"/>
+        <text x="268" y="185" fill="var(--accent3)" font-size="10" font-weight="600">captained_by (1:1)</text>
+
+        <!-- INJURY_RECORD weak entity -->
+        <rect x="60" y="400" width="180" height="80" rx="3" fill="var(--surface)" stroke="var(--accent4)" stroke-width="3"/>
+        <rect x="67" y="407" width="166" height="66" rx="2" fill="none" stroke="var(--accent4)" stroke-width="1"/>
+        <rect x="60" y="400" width="180" height="28" rx="3" fill="var(--accent4)"/>
+        <text x="150" y="420" text-anchor="middle" fill="white" font-size="11" font-weight="700">INJURY_RECORD</text>
+        <text x="72" y="442" fill="var(--muted)" font-size="11">string</text><text x="118" y="442" fill="var(--text)" font-size="12">player_id</text><text x="232" y="442" text-anchor="end" fill="var(--accent4)" font-size="10" font-weight="700">PK,FK</text>
+        <text x="72" y="458" fill="var(--muted)" font-size="11">date</text><text x="118" y="458" fill="var(--text)" font-size="12">injury_date</text><text x="232" y="458" text-anchor="end" fill="var(--accent1)" font-size="10" font-weight="700">PK</text>
+        <text x="72" y="472" fill="var(--muted)" font-size="11">string</text><text x="118" y="472" fill="var(--text)" font-size="12">description</text>
+
+        <!-- PLAYER — suffers — INJURY_RECORD -->
+        <line x1="150" y1="310" x2="150" y2="400" stroke="var(--border)" stroke-width="1.5"/>
+        <text x="162" y="360" fill="var(--accent3)" font-size="11" font-weight="600">suffers</text>
+        <text x="134" y="318" fill="var(--muted)" font-size="10">1</text>
+        <text x="134" y="396" fill="var(--muted)" font-size="10">0..N</text>
+
+        <!-- GAME -->
+        <rect x="620" y="180" width="180" height="130" rx="3" fill="var(--surface)" stroke="var(--accent1)" stroke-width="2"/>
+        <rect x="620" y="180" width="180" height="28" rx="3" fill="var(--accent1)"/>
+        <text x="710" y="200" text-anchor="middle" fill="white" font-size="13" font-weight="700">GAME</text>
+        <text x="632" y="222" fill="var(--muted)" font-size="11">string</text><text x="678" y="222" fill="var(--text)" font-size="12">game_id</text><text x="792" y="222" text-anchor="end" fill="var(--accent1)" font-size="10" font-weight="700">PK</text>
+        <text x="632" y="238" fill="var(--muted)" font-size="11">date</text><text x="678" y="238" fill="var(--text)" font-size="12">game_date</text>
+        <text x="632" y="254" fill="var(--muted)" font-size="11">string</text><text x="678" y="254" fill="var(--text)" font-size="12">score</text>
+        <text x="632" y="270" fill="var(--muted)" font-size="11">string</text><text x="678" y="270" fill="var(--text)" font-size="12">host_team</text><text x="792" y="270" text-anchor="end" fill="var(--accent2)" font-size="10" font-weight="700">FK</text>
+        <text x="632" y="286" fill="var(--muted)" font-size="11">string</text><text x="678" y="286" fill="var(--text)" font-size="12">guest_team</td><text x="792" y="286" text-anchor="end" fill="var(--accent2)" font-size="10" font-weight="700">FK</text>
+
+        <!-- TEAM — host_team — GAME -->
+        <line x1="490" y1="70" x2="620" y2="240" stroke="var(--border)" stroke-width="1.5"/>
+        <text x="565" y="145" text-anchor="middle" fill="var(--accent3)" font-size="11" font-weight="600">host_team</text>
+        <text x="494" y="75" fill="var(--muted)" font-size="10">1</text>
+        <text x="606" y="240" fill="var(--muted)" font-size="10">N</text>
+
+        <!-- TEAM — guest_team — GAME -->
+        <line x1="490" y1="85" x2="620" y2="260" stroke="var(--border)" stroke-width="1.5" stroke-dasharray="5,3"/>
+        <text x="572" y="180" text-anchor="middle" fill="var(--accent3)" font-size="11" font-weight="600">guest_team</text>
+      </svg>
+    </div>
+
+    <!-- Relationships -->
+    <h3>Relationships &amp; Cardinality</h3>
+    <div style="overflow-x:auto">
+      <table class="rel-table">
+        <tr><th>Relationship</th><th>Between</th><th>Cardinality</th><th>Participation</th></tr>
+        <tr><td><strong>has</strong></td><td>TEAM → PLAYER</td><td><span class="badge badge-1">1 : N</span></td><td>Both total — player must belong to a team; team must have players</td></tr>
+        <tr><td><strong>captained_by</strong></td><td>TEAM ↔ PLAYER</td><td><span class="badge badge-1">1 : 1</span></td><td>Team: total (must have one captain). Player: partial (only some players are captains)</td></tr>
+        <tr><td><strong>suffers</strong></td><td>PLAYER → INJURY_RECORD</td><td><span class="badge badge-1">1 : N</span></td><td>Player: partial (may have no injuries). Injury: total. Identifying relationship</td></tr>
+        <tr><td><strong>host_team</strong></td><td>TEAM → GAME</td><td><span class="badge badge-1">1 : N</span></td><td>Game: total (must have host). Team: partial</td></tr>
+        <tr><td><strong>guest_team</strong></td><td>TEAM → GAME</td><td><span class="badge badge-1">1 : N</span></td><td>Game: total (must have guest). Team: partial</td></tr>
+      </table>
+    </div>
+
+    <!-- Workflow -->
+    <h3>System Workflow</h3>
+    <div class="card">
+      <div class="flow-step"><div class="flow-num">1</div><div class="flow-content"><strong>Team Registration</strong><p>League admin registers a team with name and city. Coach is stored as a string attribute (not a separate entity).</p></div></div>
+      <div class="flow-step"><div class="flow-num">2</div><div class="flow-content"><strong>Player Registration</strong><p>Players are added with position, skill level, and linked to exactly one team via team_name (FK).</p></div></div>
+      <div class="flow-step"><div class="flow-num">3</div><div class="flow-content"><strong>Captain Assignment</strong><p>A player from the team is designated captain. TEAM.captain_id is updated to that player's player_id. Integrity constraint: captain must belong to same team.</p></div></div>
+      <div class="flow-step"><div class="flow-num">4</div><div class="flow-content"><strong>Game Scheduling</strong><p>A game row is created with unique game_id, date, and two FK references to TEAM (host_team and guest_team). host ≠ guest must be enforced by a check constraint.</p></div></div>
+      <div class="flow-step"><div class="flow-num">5</div><div class="flow-content"><strong>Score Recording</strong><p>After the game, the score field is updated. Optionally score can be split into host_score and guest_score for richer querying.</p></div></div>
+      <div class="flow-step"><div class="flow-num">6</div><div class="flow-content"><strong>Injury Tracking</strong><p>When a player gets injured, a row is added to INJURY_RECORD with the player_id and injury_date as composite key. Cascades on player deletion.</p></div></div>
+    </div>
+
+    <h3>Key Use Cases</h3>
+    <ul class="uc-list">
+      <li><strong>UC-1:</strong> Find all players in a specific team along with their position and skill level.</li>
+      <li><strong>UC-2:</strong> List all games played by a team (as either host or guest) in a given season.</li>
+      <li><strong>UC-3:</strong> Identify players with more than two injury records in the current year.</li>
+      <li><strong>UC-4:</strong> Find the captain of each team and their skill level.</li>
+      <li><strong>UC-5:</strong> Find teams that have never played as a guest team (outer join check).</li>
+      <li><strong>UC-6:</strong> List games where the same team was both host and guest — a constraint violation check (host_team ≠ guest_team).</li>
+    </ul>
+
+    <!-- Schema -->
+    <h3>Relational Schema</h3>
+    <div class="schema-block"><span class="tname">TEAM</span>(<span class="pk-attr">team_name</span>, city, coach, <span class="fk-attr">captain_id</span>)</div>
+    <div class="schema-block"><span class="tname">PLAYER</span>(<span class="pk-attr">player_id</span>, name, position, skill_level, <span class="fk-attr">team_name</span>)</div>
+    <div class="schema-block"><span class="tname">INJURY_RECORD</span>(<span class="pk-attr">player_id</span>, <span class="pk-attr">injury_date</span>, description)</div>
+    <div class="schema-block"><span class="tname">GAME</span>(<span class="pk-attr">game_id</span>, game_date, score, <span class="fk-attr">host_team</span>, <span class="fk-attr">guest_team</span>)</div>
+
+    <div class="note">
+      <strong>Extra constraints not visible in the ER diagram:</strong>
+      (1) TEAM.captain_id must reference a PLAYER.player_id where that player's team_name = this team's team_name. (2) GAME.host_team ≠ GAME.guest_team. Both require CHECK constraints or triggers at the DB level.
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════════════════════
+       COMPARISON
+  ════════════════════════════════════════════════════════ -->
+  <section id="compare">
+    <div class="section-header">
+      <span class="section-num">SUMMARY</span>
+      <h2>Cross-Case Concept Comparison</h2>
+    </div>
+
+    <div style="overflow-x:auto;margin-bottom:24px">
+      <table class="rel-table">
+        <tr>
+          <th>Concept</th>
+          <th>Case 1: Insurance</th>
+          <th>Case 2: University</th>
+          <th>Case 3: Cricket</th>
+        </tr>
+        <tr>
+          <td><strong>Weak Entity</strong></td>
+          <td>None</td>
+          <td>COURSE_OFFERING<br><span style="color:var(--muted);font-size:12px">Key: course_no+year+sem+sec</span></td>
+          <td>INJURY_RECORD<br><span style="color:var(--muted);font-size:12px">Key: player_id+injury_date</span></td>
+        </tr>
+        <tr>
+          <td><strong>M:N Resolved</strong></td>
+          <td>PARTICIPATED<br><span style="color:var(--muted);font-size:12px">+damage_amount</span></td>
+          <td>ENROLMENT (+grade)<br>TEACHES<br>PREREQUISITE</td>
+          <td>None (all 1:N or M:N via FK)</td>
+        </tr>
+        <tr>
+          <td><strong>Recursive Rel.</strong></td>
+          <td>None</td>
+          <td>has_prerequisite (M:N self-join)</td>
+          <td>captained_by (1:1 TEAM→PLAYER)</td>
+        </tr>
+        <tr>
+          <td><strong>Role-based FK</strong></td>
+          <td>None</td>
+          <td>None</td>
+          <td>host_team, guest_team<br><span style="color:var(--muted);font-size:12px">Two FKs to same TEAM table</span></td>
+        </tr>
+        <tr>
+          <td><strong>Relationship Attribute</strong></td>
+          <td>damage_amount<br>(on PARTICIPATED)</td>
+          <td>grade (on ENROLMENT)</td>
+          <td>None</td>
+        </tr>
+        <tr>
+          <td><strong>Total Participation</strong></td>
+          <td>Customer in owns<br>Accident in participated</td>
+          <td>Offering in is_offered_as<br>Offering in teaches</td>
+          <td>Player in has<br>Team in has<br>Game in host/guest</td>
+        </tr>
+        <tr>
+          <td><strong>Tables generated</strong></td>
+          <td>4 tables</td>
+          <td>7 tables</td>
+          <td>4 tables</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- Notation cheat sheet -->
+    <h3>Crow's Foot Notation — Quick Reference</h3>
+    <div class="svg-container" style="padding:24px">
+      <svg viewBox="0 0 700 200" width="700" style="max-width:100%">
+        <!-- Exactly one -->
+        <line x1="60" y1="40" x2="160" y2="40" stroke="var(--border)" stroke-width="2"/>
+        <line x1="152" y1="28" x2="152" y2="52" stroke="var(--text)" stroke-width="2"/>
+        <line x1="160" y1="28" x2="160" y2="52" stroke="var(--text)" stroke-width="2"/>
+        <text x="110" y="70" text-anchor="middle" fill="var(--muted)" font-size="12">Exactly One  ||</text>
+
+        <!-- Zero or one -->
+        <line x1="210" y1="40" x2="310" y2="40" stroke="var(--border)" stroke-width="2"/>
+        <circle cx="296" cy="40" r="7" fill="none" stroke="var(--text)" stroke-width="1.8"/>
+        <line x1="307" y1="28" x2="307" y2="52" stroke="var(--text)" stroke-width="2"/>
+        <text x="260" y="70" text-anchor="middle" fill="var(--muted)" font-size="12">Zero or One  o|</text>
+
+        <!-- One or many -->
+        <line x1="360" y1="40" x2="460" y2="40" stroke="var(--border)" stroke-width="2"/>
+        <line x1="450" y1="28" x2="450" y2="52" stroke="var(--text)" stroke-width="2"/>
+        <line x1="460" y1="40" x2="443" y2="28" stroke="var(--text)" stroke-width="2"/>
+        <line x1="460" y1="40" x2="443" y2="52" stroke="var(--text)" stroke-width="2"/>
+        <text x="410" y="70" text-anchor="middle" fill="var(--muted)" font-size="12">One or Many  |{"}</text>
+
+        <!-- Zero or many -->
+        <line x1="510" y1="40" x2="620" y2="40" stroke="var(--border)" stroke-width="2"/>
+        <circle cx="596" cy="40" r="7" fill="none" stroke="var(--text)" stroke-width="1.8"/>
+        <line x1="620" y1="40" x2="601" y2="28" stroke="var(--text)" stroke-width="2"/>
+        <line x1="620" y1="40" x2="601" y2="52" stroke="var(--text)" stroke-width="2"/>
+        <text x="565" y="70" text-anchor="middle" fill="var(--muted)" font-size="12">Zero or Many  o{"}</text>
+
+        <!-- Legend row 2: entity types -->
+        <rect x="30" y="110" width="80" height="28" rx="2" fill="var(--accent1)" stroke="var(--accent1)" stroke-width="2"/>
+        <text x="70" y="130" text-anchor="middle" fill="white" font-size="11" font-weight="700">ENTITY</text>
+        <text x="70" y="155" text-anchor="middle" fill="var(--muted)" font-size="11">Strong Entity</text>
+
+        <rect x="155" y="108" width="80" height="28" rx="2" fill="var(--accent4)" stroke="var(--accent4)" stroke-width="2"/>
+        <rect x="160" y="113" width="70" height="18" rx="1" fill="none" stroke="var(--accent4)" stroke-width="1"/>
+        <text x="195" y="128" text-anchor="middle" fill="white" font-size="11" font-weight="700">WEAK</text>
+        <text x="195" y="155" text-anchor="middle" fill="var(--muted)" font-size="11">Weak Entity</text>
+
+        <rect x="280" y="108" width="80" height="28" rx="2" fill="var(--accent3)" stroke="var(--accent3)" stroke-width="2"/>
+        <text x="320" y="128" text-anchor="middle" fill="white" font-size="11" font-weight="700">JUNCTION</text>
+        <text x="320" y="155" text-anchor="middle" fill="var(--muted)" font-size="11">Assoc. Entity</text>
+
+        <rect x="405" y="110" width="50" height="16" rx="1" fill="none" stroke="var(--accent1)" stroke-width="1.5"/>
+        <text x="430" y="122" text-anchor="middle" fill="var(--accent1)" font-size="9" font-weight="700">PK</text>
+        <text x="430" y="155" text-anchor="middle" fill="var(--muted)" font-size="11">Primary Key</text>
+
+        <rect x="500" y="110" width="50" height="16" rx="1" fill="none" stroke="var(--accent2)" stroke-width="1.5"/>
+        <text x="525" y="122" text-anchor="middle" fill="var(--accent2)" font-size="9" font-weight="700">FK</text>
+        <text x="525" y="155" text-anchor="middle" fill="var(--muted)" font-size="11">Foreign Key</text>
+
+        <rect x="595" y="110" width="60" height="16" rx="1" fill="none" stroke="var(--accent4)" stroke-width="1.5"/>
+        <text x="625" y="122" text-anchor="middle" fill="var(--accent4)" font-size="9" font-weight="700">PK,FK</text>
+        <text x="625" y="155" text-anchor="middle" fill="var(--muted)" font-size="11">Both</text>
+      </svg>
+    </div>
+
+    <div class="note" style="margin-top:24px">
+      <strong>Underlined attributes in Silberschatz ER notation:</strong>
+      In traditional Chen/Silberschatz ER diagrams, primary key attributes are underlined and drawn in ovals. In crow's foot (as used in this assignment), they are shown as PK tags inside the entity table. Both convey the same information.
+    </div>
+  </section>
+
+</div><!-- /page -->
+
+<script>
+  // Active nav highlight on scroll
+  const sections = document.querySelectorAll('section[id], div[id="overview"]');
+  const links = document.querySelectorAll('nav a');
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        links.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + e.target.id));
+      }
+    });
+  }, { threshold: 0.3 });
+  sections.forEach(s => obs.observe(s));
+</script>
+</body>
+</html>
