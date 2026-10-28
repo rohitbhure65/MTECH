@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context reloadable="false">
+
+    <!-- Connection POOL managed by Tomcat. Needs mysql-connector-j.jar in %CATALINA_HOME%\lib -->
+    <Resource name="jdbc/college"
+              auth="Container"
+              type="javax.sql.DataSource"
+              driverClassName="com.mysql.cj.jdbc.Driver"
+              url="jdbc:mysql://localhost:3306/college?serverTimezone=UTC"
+              username="root"
+              password="root123"
+              maxTotal="20"
+              maxIdle="5"
+              maxWaitMillis="10000"/>
+
+    <!-- A value any servlet can read through JNDI (optional example) -->
+    <Environment name="maxStudents" value="500" type="java.lang.Integer" override="false"/>
+</Context>

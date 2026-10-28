@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="https://jakarta.ee/xml/ns/jakartaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee
+                             https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd"
+         version="6.0">
+
+    <display-name>My College App</display-name>
+
+    <!-- 1. context-param: value visible to ALL servlets (ServletContext) -->
+    <context-param>
+        <param-name>college</param-name>
+        <param-value>ABC Engineering College</param-value>
+    </context-param>
+
+    <!-- 2. filters: declared here, then mapped. Order of filter-mapping = order of execution -->
+    <filter>
+        <filter-name>EncodingFilter</filter-name>
+        <filter-class>com.example.filter.EncodingFilter</filter-class>
+        <init-param>
+            <param-name>encoding</param-name>
+            <param-value>UTF-8</param-value>
+        </init-param>
+    </filter>
+    <filter-mapping>
+        <filter-name>EncodingFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter>
+        <filter-name>LogFilter</filter-name>
+        <filter-class>com.example.filter.LogFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>LogFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+        <dispatcher>REQUEST</dispatcher>
+        <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+
+    <!-- 3. servlet declared in XML (instead of @WebServlet) with its own init-param -->
+    <servlet>
+        <servlet-name>InitDemo</servlet-name>
+        <servlet-class>com.example.hello.InitDemoServlet</servlet-class>
+        <init-param>
+            <param-name>author</param-name>
+            <param-value>Rohit</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>InitDemo</servlet-name>
+        <url-pattern>/init-demo</url-pattern>
+    </servlet-mapping>
+
+    <!-- 4. session settings -->
+    <session-config>
+        <session-timeout>30</session-timeout>        <!-- minutes -->
+        <cookie-config>
+            <http-only>true</http-only>
+        </cookie-config>
+    </session-config>
+
+    <!-- 5. first page shown for http://localhost:8080/myapp/ -->
+    <welcome-file-list>
+        <welcome-file>index.html</welcome-file>
+    </welcome-file-list>
+
+    <!-- 6. custom error pages -->
+    <error-page>
+        <error-code>404</error-code>
+        <location>/error404.html</location>
+    </error-page>
+    <error-page>
+        <exception-type>java.lang.Exception</exception-type>
+        <location>/error500.html</location>
+    </error-page>
+
+    <!-- 7. only needed if you use the pooled DataSource from context.xml (JndiDB) -->
+    <resource-ref>
+        <res-ref-name>jdbc/college</res-ref-name>
+        <res-type>javax.sql.DataSource</res-type>
+        <res-auth>Container</res-auth>
+    </resource-ref>
+</web-app>
